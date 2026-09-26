@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="eo">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      color-scheme: light;
+      --fono: #f3f6fb;
+      --papero: #ffffff;
+      --teksto: #182337;
+      --milda: #657187;
+      --linio: #dce3ee;
+      --chefa: #285bd8;
+      --chefa-malhela: #2049ad;
+      --rondo: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      background: var(--fono);
+      color: var(--teksto);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    header {
+      color: white;
+      background: linear-gradient(120deg, #214bae, #397de0);
+      padding: 30px 20px;
+    }
+
+    .kapenhavo,
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .kapenhavo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+    }
+
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    header p {
+      margin-bottom: 0;
+      opacity: .9;
+    }
+
+    main {
+      padding: 24px 20px 50px;
+    }
+
+    .arangho {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .karto {
+      background: var(--papero);
+      padding: 22px;
+      border: 1px solid var(--linio);
+      border-radius: var(--rondo);
+      box-shadow: 0 5px 20px rgb(24 35 55 / 4%);
+      margin-bottom: 20px;
+      min-width: 0;
+    }
+
+    label {
+      display: block;
+      font-size: .92rem;
+      font-weight: 650;
+      margin: 14px 0 6px;
+    }
+
+    input,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid #c8d1df;
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: white;
+      color: var(--teksto);
+    }
+
+    textarea {
+      min-height: 115px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    button:focus-visible {
+      outline: 3px solid #b4cdfd;
+      outline-offset: 2px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 650;
+      cursor: pointer;
+      background: var(--chefa);
+      color: white;
+      transition: background .15s;
+    }
+
+    button:hover {
+      background: var(--chefa-malhela);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: .6;
+    }
+
+    .duaranga {
+      color: var(--chefa);
+      background: #edf2ff;
+    }
+
+    .duaranga:hover {
+      background: #dce7ff;
+    }
+
+    .largha {
+      width: 100%;
+      margin-top: 18px;
+    }
+
+    .elektiloj {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .elektiloj button {
+      flex: 1;
+      padding: 9px;
+      font-size: .9rem;
+    }
+
+    .milda {
+      color: var(--milda);
+      font-size: .9rem;
+    }
+
+    .interspaco {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .flukapo {
+      margin-bottom: 16px;
+    }
+
+    .flukapo h2 {
+      margin-bottom: 0;
+    }
+
+    .mesagho {
+      border-radius: 12px;
+      padding: 13px 16px;
+      margin-bottom: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .mesagho.sukceso {
+      color: #155535;
+      background: #e4f6eb;
+      border: 1px solid #b6dec7;
+    }
+
+    .mesagho.eraro {
+      color: #8d2525;
+      background: #ffeded;
+      border: 1px solid #f2c1c1;
+    }
+
+    .mesagho.informo {
+      color: #24467d;
+      background: #e8efff;
+      border: 1px solid #c6d7fb;
+    }
+
+    .autoro {
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .dato {
+      display: block;
+      color: var(--milda);
+      font-size: .8rem;
+      margin-top: 3px;
+    }
+
+    .enhavo {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      margin: 16px 0;
+    }
+
+    .komentaro {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--linio);
+    }
+
+    .komento {
+      background: #f5f7fb;
+      border-radius: 12px;
+      padding: 13px;
+      margin-bottom: 10px;
+    }
+
+    .komento .enhavo {
+      margin: 8px 0 0;
+      font-size: .94rem;
+    }
+
+    .komentformularo textarea {
+      min-height: 78px;
+    }
+
+    .komentformularo button {
+      margin-top: 10px;
+    }
+
+    .malplena {
+      padding: 34px 22px;
+      text-align: center;
+      color: var(--milda);
+    }
+
+    #nunaNomo,
+    #kontoRetposhto {
+      overflow-wrap: anywhere;
+    }
+
+    #nunaUzanto {
+      max-width: 100%;
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: rgb(255 255 255 / 13%);
+    }
+
+    .noto {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 800px) {
+      .arangho {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 18px 14px 40px;
+      }
+
+      .karto {
+        padding: 18px;
+      }
+    }
+
+    .kontforigo {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--linio);
+}
+
+.kontforigo summary {
+  color: #a52828;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.kontforigo[open] summary {
+  margin-bottom: 14px;
+}
+
+.kontforigaKonfirmo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: .88rem;
+  font-weight: 400;
+}
+
+.kontforigaKonfirmo input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 4px 0 0;
+}
+
+.forigilaro {
+  margin-top: 12px;
+}
+
+.forigilaro button {
+  padding: 7px 12px;
+  font-size: .85rem;
+}
+
+.forigaKonfirmujo {
+  padding: 14px;
+  border: 1px solid #efc4c4;
+  border-radius: 12px;
+  background: #fff5f5;
+}
+
+.forigaKonfirmujo p {
+  margin-bottom: 12px;
+  font-size: .9rem;
+}
+
+.forigaButonaro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button.danghera {
+  background: #b52b2b;
+}
+
+button.danghera:hover {
+  background: #912020;
+}
+
+.uzkondichaAreo {
+  max-width: 1120px;
+  margin: 20px auto 0;
+  padding: 0 20px;
+}
+
+.uzkondichaButono {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
+.uzkondichaSekcio {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+.uzkondichaSekcio h3 {
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.uzkondichaSekcio p,
+.uzkondichaSekcio li {
+  overflow-wrap: anywhere;
+}
+
+.uzkondichaSekcio ul {
+  padding-left: 24px;
+}
+
+.uzkondichaSekcio li {
+  margin-bottom: 10px;
+}
+
+.uzkondichaSekcio a {
+  color: var(--chefa);
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 800px) {
+  .uzkondichaAreo {
+    padding: 0 14px;
+  }
+}
+
+.tekstaLigilo {
+  color: var(--chefa);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+}
+
+.tekstaLigilo:hover {
+  color: var(--chefa-malhela);
+}
+
+.tekstaLigilo:focus-visible {
+  outline: 3px solid #b4cdfd;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="kapenhavo">
+      <div>
+        <h1>Radio, televido kaj pli</h1>
+        <p>Informtabulo</p>
+      </div>
+
+      <div id="nunaUzanto">
+        <span id="nunaNomo">Vi estas vizitanto</span>
+      </div>
+    </div>
+  </header>
+
+<div class="uzkondichaAreo">
+  <button
+    id="uzkondichaButono"
+    type="button"
+    class="duaranga uzkondichaButono"
+    aria-expanded="false"
+    aria-controls="uzkondichaSekcio"
+  >
+    Uzkondichoj kaj kontakto al la administranto
+  </button>
+
+  <!-- La tuta enhavo restas kashita ghis klako al la butono. -->
+  <section
+    id="uzkondichaSekcio"
+    class="karto uzkondichaSekcio"
+    aria-labelledby="uzkondichaTitolo"
+    hidden
+  >
+    <h2 id="uzkondichaTitolo">
+      Uzkondichoj kaj kontakto al la administranto
+    </h2>
+
+    <h3>1. Celo</h3>
+    <p>
+      Informtabulo &quot;Radio, televido kaj pli&quot; celas amikan intershanghon de informoj pri radio, televido kaj pli.
+      Traktu aliajn partoprenantojn kun respekto, ech kiam vi malkonsentas.
+      Per registrigho vi akceptas la uzkondichojn.
+    </p>
+
+    <h3>2. Malpermesata enhavo</h3>
+    <p>Malpermesataj estas:</p>
+
+    <ul>
+      <li>
+        Enhavo komplete au chefe en lingvo alia, ol Esperanto (alilingvaj propraj nomoj kaj titoloj estas tolerataj).
+      </li>
+      <li>
+        Partia au balota propagando, politika varbado kaj kampanjaj alvokoj.
+      </li>
+      <li>
+        Insultoj, minacoj, chikanado kaj instigo al perforto.
+      </li>
+      <li>
+        Publikigo de fremdaj privataj informoj sen permeso.
+      </li>
+      <li>
+        Trudreklamo, spamo, trompaj au dangheraj ligiloj kaj ripetaj amasmesaghoj.
+      </li>
+      <li>
+        Eksplicite seksa au grafike perforta enhavo.
+      </li>
+      <li>
+        Enhavo, kies publikigo malobservas la rajtojn de aliaj inkluzive autorrajtojn.
+      </li>
+    </ul>
+
+    <h3>3. Respondeco</h3>
+    <p>
+      Vi respondecas pri viaj afishoj, komentoj kaj kunhavigitaj retligiloj.
+      La administranto povas forigi enhavon, kiu malobservas chi tiujn
+      regulojn, kaj limigi aliron al la informtabulo okaze de fiuzo.
+      La reguloj validas egale por chiuj partoprenantoj,
+      sendepende de iliaj politikaj vidpunktoj.
+    </p>
+    <p>
+      Se vi rimarkas probleman enhavon au malkonsentas kun administra
+      decido, kontaktu la administranton. Indiku la autoron, la daton
+      kaj mallongan priskribon de la koncerna afisho au komento.
+      Ne resendu nenecese privatajn informojn au dangheran enhavon.
+    </p>
+
+    <h3>4. Videbleco kaj kontaj datumoj</h3>
+    <p>
+      Via montrata nomo, afishoj, komentoj kaj iliaj datoj estas videblaj
+      al la vizitantoj de la informtabulo. Ne publikigu konfidencajn informojn.
+      Via retposhtadreso estas uzata por via konto kaj ghia konfirmo;
+      ghi ne aperas en la publika afisha fluo.
+    </p>
+    <p>
+      Pasvortoj estas konservataj, kiel chifritaj valoroj,
+      ne kiel legebla teksto. La administranto povas aliri la
+      kontajn datumojn konservitajn en la administra foliaro.
+    </p>
+<p>
+  La informtabulo ne automate shargas au montras la enhavon de retpaghoj kunhavigitaj
+  per retligilo. Se vi malfermas tian retpaghon, ghi povas nepre esti en lingvo alia, ol Esperanto, kaj ricevi teknikajn informojn pri via vizito,
+  ekzemple vian IP-adreson.
+</p>
+
+    <h3>5. Dauro kaj forigo de enhavo</h3>
+    <p>
+      Afishoj kaj komentoj malaperas post maksimume 72 horoj.
+      Komento povas malaperi pli frue, se ghia gepatra afisho estas
+      forigita au eksvalidighas.
+      La fakta purigado de la folioj okazas dum legado de la fluo
+      kaj per perioda automata purigado.
+    </p>
+    <p>
+      Vi povas forigi viajn proprajn afishojn kaj komentojn,
+      kaj vi povas forigi vian konton.
+      Forigo de afisho ankau forigas chiujn komentojn sub ghi.
+      Forigo de konto ankau forigas ghiajn afishojn kaj komentojn.
+    </p>
+<p>
+  Forigo de afisho au komento ne forigas la enhavon de retejoj,
+  al kiuj ghi ligis. Forigo el la aktivaj folioj ne garantias
+  tujan forvishon el la versihistorio au rezervkopioj de Google.
+</p>
+
+    <h3>6. Kontakto al la administranto</h3>
+    <p>
+      Por raporti fiuzon, peti helpon pri via konto,
+      demandi pri viaj datumoj au peti rekonsideron de administra
+      decido, skribu al la administranto:
+    </p>
+
+    <p>
+  <a id="administrantaKontakto" hidden></a>
+  <span id="administrantaKontaktoMankas">
+    Por vidi la kontaktadreson, konfirmu vian registrighon kaj ensalutu.
+  </span>
+</p>
+
+    <p class="milda noto">
+      Neniam sendu vian pasvorton au konfirman jhetonon al la administranto.
+    </p>
+  </section>
+</div>
+
+<main>
+
+  <main>
+    <div
+      id="mesagho"
+      class="mesagho informo"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+
+    <div class="arangho">
+      <aside>
+        <section id="enirSekcio" class="karto">
+          <h2>Bonvenon!</h2>
+
+          <div class="elektiloj">
+            <button
+              id="elektiEnsaluton"
+              type="button"
+              aria-pressed="true"
+            >Ensaluto</button>
+
+            <button
+              id="elektiRegistrighon"
+              type="button"
+              class="duaranga"
+              aria-pressed="false"
+            >Registrigho</button>
+          </div>
+
+          <!-- Propra validigo tenas mesaghojn en Esperanto. -->
+          <form id="ensalutFormularo" novalidate>
+            <label for="ensalutRetposhto">Retposhto</label>
+            <input
+              id="ensalutRetposhto"
+              type="email"
+              autocomplete="username"
+              maxlength="254"
+              placeholder="vi@ekzemplo.org"
+            >
+
+            <label for="ensalutPasvorto">Pasvorto</label>
+            <input
+              id="ensalutPasvorto"
+              type="password"
+              autocomplete="current-password"
+              maxlength="200"
+              placeholder="Via pasvorto"
+            >
+
+            <button type="submit" class="largha">Ensaluti</button>
+          </form>
+
+          <form id="registrighFormularo" novalidate hidden>
+            <label for="registrighNomo">Nomo</label>
+            <input
+              id="registrighNomo"
+              type="text"
+              autocomplete="nickname"
+              maxlength="80"
+              placeholder="Via publika nomo"
+            >
+
+            <label for="registrighRetposhto">Retposhto</label>
+            <input
+              id="registrighRetposhto"
+              type="email"
+              autocomplete="username"
+              maxlength="254"
+              placeholder="vi@ekzemplo.org"
+            >
+
+            <label for="registrighPasvorto">Pasvorto</label>
+            <input
+              id="registrighPasvorto"
+              type="password"
+              autocomplete="new-password"
+              maxlength="200"
+              placeholder="Almenau 10 signoj"
+            >
+
+            <label for="registrighRipeto">Ripetu la pasvorton</label>
+            <input
+              id="registrighRipeto"
+              type="password"
+              autocomplete="new-password"
+              maxlength="200"
+              placeholder="La sama pasvorto"
+            >
+
+            <p class="milda">
+    Per registrigho vi akceptas la uzkondichojn.
+    Vi povas legi ilin per la butono
+    "Uzkondichoj kaj kontakto al la administranto"
+    sub la cheftitolo.
+  </p>
+
+            <button type="submit" class="largha">Krei konton</button>
+          </form>
+        </section>
+
+<section id="kontoSekcio" class="karto" hidden>
+  <h2>Via konto</h2>
+
+  <p id="kontoNomo" class="autoro"></p>
+  <p id="kontoRetposhto" class="milda"></p>
+
+  <button id="elsalutButono" type="button" class="duaranga">
+    Elsaluti
+  </button>
+
+  <details class="kontforigo">
+    <summary>Forigi mian konton</summary>
+
+    <p class="milda">
+      Tio forigos vian konton, viajn afishojn kaj viajn komentojn.
+      Ankau komentoj de aliaj uzantoj sub viaj afishoj estos forigitaj.
+    </p>
+
+    <p class="milda">
+      La forigon ne eblas malfari per chi tiu apo.
+      Eksteraj bildodosieroj ne estos forigitaj.
+    </p>
+
+    <form id="kontforigFormularo" novalidate>
+      <label for="kontforigPasvorto">Via nuna pasvorto</label>
+
+      <input
+        id="kontforigPasvorto"
+        type="password"
+        autocomplete="current-password"
+        maxlength="200"
+        placeholder="Reenigu vian pasvorton"
+      >
+
+      <label class="kontforigaKonfirmo">
+        <input id="kontforigKonfirmo" type="checkbox">
+        <span>
+          Mi komprenas kaj volas forigi mian konton kaj la rilatan enhavon.
+        </span>
+      </label>
+
+      <button type="submit" class="danghera largha">
+        Forigi mian konton definitive
+      </button>
+    </form>
+  </details>
+</section>
+
+        <section class="karto">
+          <h2>Pri la informtabulo</h2>
+          <p class="milda">
+            Chiuj afishoj kaj komentoj estas publikaj. Ensalutintaj uzantoj povas afishi kaj komenti kaj krome forigi siajn afishojn kaj komentojn; redaktado ne estas ebla.
+          </p>
+          <p class="milda">
+            Afishoj kaj komentoj restas maksimume 72 horojn.
+            Kiam afisho malaperas, ghiaj komentoj ankau malaperas.
+          </p>
+          <p class="milda">
+            La fluo montras la 100 plej novajn afishojn.
+            Datoj kaj horoj estas montrataj lau Universala Tempo Kunordigita (UTK).
+          </p>
+<p class="milda noto">
+  Retligiloj povas aperi rekte en afishoj kaj komentoj.
+  La informtabulo ne montras antauvidojn de la ligita enhavo.
+  Atentu antau malfermo de nekonataj ligiloj.
+</p>
+        </section>
+      </aside>
+
+      <section aria-label="Komunuma fluo">
+        <section id="novaAfishoSekcio" class="karto" hidden>
+          <h2>Nova afisho</h2>
+
+          <form id="afishFormularo" novalidate>
+            <label for="afishTeksto">Via mesagho</label>
+            <textarea
+              id="afishTeksto"
+              maxlength="5000"
+              placeholder="Kion vi volas kunhavigi?"
+            ></textarea>
+
+            <button type="submit">Publikigi afishon</button>
+          </form>
+        </section>
+
+        <div class="interspaco flukapo">
+          <h2>Afisha fluo</h2>
+          <button id="refreshaButono" type="button" class="duaranga">
+            Refreshigi
+          </button>
+        </div>
+
+        <p id="fluaStato" class="milda" role="status">
+          Shargado de la fluo ...
+        </p>
+
+        <div id="fluo"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Sesia jhetono restas nur en la nuna retumila langeto.
+    const stato = {
+      jhetono: '',
+      uzanto: null,
+      afishoj: [],
+      shargante: false,
+      operacioj: 0
+    };
+
+    function elemento(identigilo) {
+      return document.getElementById(identigilo);
+    }
+
+    function montriMesaghon(teksto, speco = 'informo') {
+      const ujo = elemento('mesagho');
+      ujo.textContent = teksto;
+      ujo.className = 'mesagho ' + speco;
+      ujo.hidden = !teksto;
+    }
+
+    function konserviJhetonon(jhetono) {
+      stato.jhetono = jhetono || '';
+
+      try {
+        if (stato.jhetono) {
+          sessionStorage.setItem('komunumaJhetono', stato.jhetono);
+        } else {
+          sessionStorage.removeItem('komunumaJhetono');
+        }
+      } catch (eraro) {
+        // Sen retumila stokado la sesio vivas ghis pagha reshargo.
+      }
+    }
+
+    function legiJhetonon() {
+      try {
+        return sessionStorage.getItem('komunumaJhetono') || '';
+      } catch (eraro) {
+        return '';
+      }
+    }
+
+    // Nur fiksaj, Esperantaj mesaghoj anstatauas retajn sistemerarojn.
+    function vokiServilon(nomo, ...argumentoj) {
+      return new Promise((sukcesi, malsukcesi) => {
+        google.script.run
+          .withSuccessHandler(respondo => {
+            if (!respondo || typeof respondo.bone !== 'boolean') {
+              malsukcesi(new Error('Nevalida respondo de la servilo.'));
+              return;
+            }
+
+            if (!respondo.bone) {
+              const eraro = new Error(
+                respondo.eraro || 'La peto malsukcesis.'
+              );
+
+              eraro.kodo = respondo.kodo;
+              malsukcesi(eraro);
+              return;
+            }
+
+            sukcesi(respondo.datumoj);
+          })
+          .withFailureHandler(() => {
+            malsukcesi(new Error(
+              'Ne eblis kontakti la servilon. Kontrolu la konekton kaj reprovu.'
+            ));
+          })[nomo](...argumentoj);
+      });
+    }
+
+    function traktiEraron(eraro) {
+      if (eraro.kodo === 'SESIO') {
+        konserviJhetonon('');
+        stato.uzanto = null;
+        ghisdatigiKonton();
+        montriFluon();
+      }
+
+      montriMesaghon(
+        eraro.message || 'La ago malsukcesis. Bonvolu reprovi.',
+        'eraro'
+      );
+    }
+
+    // Dum sendo la koncerna formularo ne povas esti sendita dufoje.
+    async function plenumiAgon(ujo, laboro) {
+      const regiloj = Array.from(
+        ujo.querySelectorAll('button, input, textarea')
+      );
+
+      if (ujo.dataset.okupata === 'jes') {
+        return;
+      }
+
+      const antauaj = regiloj.map(regilo => regilo.disabled);
+      ujo.dataset.okupata = 'jes';
+      stato.operacioj++;
+      regiloj.forEach(regilo => regilo.disabled = true);
+
+      try {
+        await laboro();
+      } catch (eraro) {
+        traktiEraron(eraro);
+      } finally {
+        regiloj.forEach((regilo, indekso) => {
+          regilo.disabled = antauaj[indekso];
+        });
+
+        delete ujo.dataset.okupata;
+        stato.operacioj--;
+      }
+    }
+
+    function elektiEniron(registrigho) {
+      elemento('ensalutFormularo').hidden = registrigho;
+      elemento('registrighFormularo').hidden = !registrigho;
+
+      elemento('elektiEnsaluton').classList.toggle(
+        'duaranga', registrigho
+      );
+
+      elemento('elektiRegistrighon').classList.toggle(
+        'duaranga', !registrigho
+      );
+
+      elemento('elektiEnsaluton')
+        .setAttribute('aria-pressed', String(!registrigho));
+
+      elemento('elektiRegistrighon')
+        .setAttribute('aria-pressed', String(registrigho));
+    }
+
+    function ghisdatigiKonton() {
+      const ensalutinta = Boolean(stato.uzanto);
+
+      elemento('enirSekcio').hidden = ensalutinta;
+      elemento('kontoSekcio').hidden = !ensalutinta;
+      elemento('novaAfishoSekcio').hidden = !ensalutinta;
+
+      elemento('nunaNomo').textContent = ensalutinta
+        ? 'Ensalutinta: ' + stato.uzanto.nomo
+        : 'Vi estas vizitanto';
+
+      elemento('kontoNomo').textContent =
+        ensalutinta ? stato.uzanto.nomo : '';
+
+      elemento('kontoRetposhto').textContent =
+        ensalutinta ? stato.uzanto.retposhto : '';
+      ghisdatigiAdministrantanKontakton();
+    }
+
+    function akceptiSesion(datumoj) {
+      konserviJhetonon(datumoj.jhetono);
+      stato.uzanto = datumoj.uzanto;
+      ghisdatigiKonton();
+      montriFluon();
+    }
+
+    // Uzanta teksto chirkauiras HTML-interpretadon per textContent.
+    function kreiElementon(speco, klaso, teksto) {
+      const ero = document.createElement(speco);
+
+      if (klaso) {
+        ero.className = klaso;
+      }
+
+      if (teksto !== undefined) {
+        ero.textContent = teksto;
+      }
+
+      return ero;
+    }
+
+    function formiDaton(valoro) {
+      const dato = new Date(valoro);
+
+      if (!Number.isFinite(dato.getTime())) {
+        return 'Nekonata dato';
+      }
+
+      return dato.toISOString().slice(0, 16).replace('T', ' ') + ' UTK';
+    }
+
+    function aldoniAutoron(ujo, nomo, dato) {
+      ujo.appendChild(kreiElementon('div', 'autoro', nomo));
+
+      const tempo = kreiElementon('time', 'dato', formiDaton(dato));
+      tempo.dateTime = dato;
+      ujo.appendChild(tempo);
+    }
+
+    function kreiKomentformularon(afisho) {
+      const formularo = kreiElementon('form', 'komentformularo');
+      formularo.noValidate = true;
+
+      const identigilo = 'komento-' + afisho.id;
+      const etikedo = kreiElementon('label', '', 'Via komento');
+      etikedo.htmlFor = identigilo;
+
+      const tekstejo = kreiElementon('textarea');
+      tekstejo.id = identigilo;
+      tekstejo.maxLength = 1500;
+      tekstejo.placeholder = 'Skribu afablan respondon ...';
+
+      const butono = kreiElementon('button', '', 'Komenti');
+      butono.type = 'submit';
+
+      formularo.append(etikedo, tekstejo, butono);
+
+      formularo.addEventListener('submit', evento => {
+        evento.preventDefault();
+
+        plenumiAgon(formularo, async () => {
+          const teksto = tekstejo.value.trim();
+
+          if (!teksto) {
+            throw new Error('La komento ne rajtas esti malplena.');
+          }
+
+          await vokiServilon(
+            'aldoniKomenton',
+            stato.jhetono,
+            afisho.id,
+            teksto
+          );
+
+          tekstejo.value = '';
+          montriMesaghon('Via komento estas publikigita.', 'sukceso');
+          await refreshigiFluon();
+        });
+      });
+
+      return formularo;
+    }
+
+    function kreiAfishkarton(afisho) {
+      const karto = kreiElementon('article', 'karto');
+      aldoniAutoron(karto, afisho.nomo, afisho.dato);
+
+karto.appendChild(
+  kreiEnhavonKunLigiloj(afisho.teksto)
+);
+
+      const komentaro = kreiElementon('section', 'komentaro');
+      komentaro.setAttribute('aria-label', 'Komentoj');
+
+      komentaro.appendChild(
+        kreiElementon(
+          'h3', '', 'Komentoj (' + afisho.komentoj.length + ')'
+        )
+      );
+
+      if (!afisho.komentoj.length) {
+        komentaro.appendChild(
+          kreiElementon('p', 'milda', 'Ankorau ne estas komentoj.')
+        );
+      }
+
+afisho.komentoj.forEach(komento => {
+  const ero = kreiElementon('article', 'komento');
+
+  aldoniAutoron(ero, komento.nomo, komento.dato);
+
+ero.appendChild(
+  kreiEnhavonKunLigiloj(komento.teksto)
+);
+
+  aldoniForigilon(ero, komento, 'komento');
+
+  komentaro.appendChild(ero);
+});
+
+      if (stato.uzanto) {
+        komentaro.appendChild(kreiKomentformularon(afisho));
+      } else {
+        komentaro.appendChild(
+          kreiElementon('p', 'milda', 'Ensalutu por komenti.')
+        );
+      }
+
+aldoniForigilon(karto, afisho, 'afisho');
+karto.appendChild(komentaro);
+
+return karto;
+    }
+
+    function montriFluon() {
+      const fragmento = document.createDocumentFragment();
+
+      if (!stato.afishoj.length) {
+        fragmento.appendChild(kreiElementon(
+          'div',
+          'karto malplena',
+          'Ankorau ne estas afishoj. Estu la unua!'
+        ));
+      } else {
+        stato.afishoj.forEach(afisho => {
+          fragmento.appendChild(kreiAfishkarton(afisho));
+        });
+      }
+
+      elemento('fluo').replaceChildren(fragmento);
+    }
+
+    async function refreshigiFluon() {
+      if (stato.shargante) {
+        return;
+      }
+
+      stato.shargante = true;
+      elemento('refreshaButono').disabled = true;
+      elemento('fluaStato').textContent = 'Shargado de la fluo ...';
+
+      try {
+        const datumoj = await vokiServilon('akiriAfishojn');
+        stato.afishoj = datumoj;
+        montriFluon();
+
+        elemento('fluaStato').textContent =
+          'Montrataj afishoj: ' + datumoj.length;
+      } catch (eraro) {
+        elemento('fluaStato').textContent =
+          'La fluo ne povis esti ghisdatigita.';
+        traktiEraron(eraro);
+      } finally {
+        stato.shargante = false;
+        elemento('refreshaButono').disabled = false;
+      }
+    }
+
+    // Fona refreshigo ne interrompas aktivan verkadon.
+    function estasMalneto() {
+      const aktiva = document.activeElement;
+
+      if (
+        aktiva &&
+        aktiva.closest &&
+        aktiva.closest('.komentformularo')
+      ) {
+        return true;
+      }
+
+      return Array.from(
+        document.querySelectorAll('.komentformularo textarea')
+      ).some(tekstejo => tekstejo.value.trim().length > 0);
+    }
+
+    elemento('elektiEnsaluton').addEventListener('click', () => {
+      elektiEniron(false);
+    });
+
+    elemento('elektiRegistrighon').addEventListener('click', () => {
+      elektiEniron(true);
+    });
+
+    elemento('ensalutFormularo').addEventListener('submit', evento => {
+      evento.preventDefault();
+
+      plenumiAgon(evento.currentTarget, async () => {
+        const retposhto = elemento('ensalutRetposhto').value.trim();
+        const pasvorto = elemento('ensalutPasvorto').value;
+
+        if (!retposhto || !pasvorto) {
+          throw new Error('Bonvolu enigi retposhton kaj pasvorton.');
+        }
+
+        const datumoj = await vokiServilon(
+          'ensalutiUzanton', retposhto, pasvorto
+        );
+
+        elemento('ensalutFormularo').reset();
+        akceptiSesion(datumoj);
+        montriMesaghon('Vi sukcese ensalutis.', 'sukceso');
+      });
+    });
+
+    elemento('registrighFormularo').addEventListener('submit', evento => {
+  evento.preventDefault();
+
+  plenumiAgon(evento.currentTarget, async () => {
+    const nomo = elemento('registrighNomo').value.trim();
+    const retposhto = elemento('registrighRetposhto').value.trim();
+    const pasvorto = elemento('registrighPasvorto').value;
+    const ripeto = elemento('registrighRipeto').value;
+
+    if (!nomo || !retposhto) {
+      throw new Error('Bonvolu enigi nomon kaj retposhton.');
+    }
+
+    if (pasvorto.length < 10) {
+      throw new Error('La pasvorto devas havi almenau 10 signojn.');
+    }
+
+    if (pasvorto !== ripeto) {
+      throw new Error('La du pasvortoj ne koheras.');
+    }
+
+    const datumoj = await vokiServilon(
+      'registriUzanton',
+      nomo,
+      retposhto,
+      pasvorto
+    );
+
+    elemento('registrighFormularo').reset();
+
+    // Registrigho ne plu kreas ensalutan sesion.
+    // Unue necesas malfermi la retposhtan konfirman ligilon.
+    elektiEniron(false);
+    elemento('ensalutRetposhto').value = retposhto;
+
+    montriMesaghon(datumoj.mesagho, 'informo');
+  });
+});
+
+elemento('afishFormularo').addEventListener('submit', evento => {
+  evento.preventDefault();
+
+  plenumiAgon(evento.currentTarget, async () => {
+    const teksto = elemento('afishTeksto').value.trim();
+
+    if (!teksto) {
+      throw new Error('La afisho ne rajtas esti malplena.');
+    }
+
+    await vokiServilon(
+      'aldoniAfishon',
+      stato.jhetono,
+      teksto
+    );
+
+    elemento('afishFormularo').reset();
+
+    montriMesaghon(
+      'Via afisho estas publikigita.',
+      'sukceso'
+    );
+
+    await refreshigiFluon();
+  });
+});
+
+    elemento('elsalutButono').addEventListener('click', () => {
+      plenumiAgon(elemento('kontoSekcio'), async () => {
+        // Unue nuligu la servilan sesion; poste forgesu la lokan jhetonon.
+        await vokiServilon('elsalutiUzanton', stato.jhetono);
+
+        konserviJhetonon('');
+        stato.uzanto = null;
+        elemento('afishFormularo').reset();
+        ghisdatigiKonton();
+        montriFluon();
+
+        montriMesaghon('Vi sukcese elsalutis.', 'sukceso');
+      });
+    });
+
+    elemento('refreshaButono').addEventListener('click', () => {
+      if (estasMalneto()) {
+        montriMesaghon(
+          'Sendu au malplenigu viajn komentajn malnetojn antau refreshigo.'
+        );
+        return;
+      }
+
+      refreshigiFluon();
+    });
+
+    async function komenci() {
+
+      await kontroliKonfirmanLigilon();
+
+      stato.jhetono = legiJhetonon();
+
+      // Dum restarigo oni ne povas samtempe komenci alian ensaluton.
+      const enirButonoj = Array.from(
+        elemento('enirSekcio').querySelectorAll('button')
+      );
+
+      enirButonoj.forEach(butono => butono.disabled = true);
+
+      try {
+        if (stato.jhetono) {
+          stato.uzanto = await vokiServilon(
+            'akiriNunanUzanton', stato.jhetono
+          );
+        }
+      } catch (eraro) {
+        if (eraro.kodo === 'SESIO') {
+          konserviJhetonon('');
+        }
+
+        traktiEraron(eraro);
+      } finally {
+        enirButonoj.forEach(butono => butono.disabled = false);
+      }
+
+      ghisdatigiKonton();
+      await refreshigiFluon();
+
+      // Fona refreshigo funkcias nur en videbla, neokupata langeto.
+      setInterval(() => {
+        if (
+          !document.hidden &&
+          !stato.operacioj &&
+          !estasMalneto()
+        ) {
+          refreshigiFluon();
+        }
+      }, 60000);
+    }
+
+    
+
+    // La ret-apo funkcias en kadro.
+// Tial ni uzas la Google-metodon por legi la eksteran ret-apan adreson.
+async function kontroliKonfirmanLigilon() {
+  const loko = await new Promise(sukcesi => {
+    google.script.url.getLocation(sukcesi);
+  });
+
+  const jhetono = loko.parameter && loko.parameter.konfirmo;
+
+  if (!jhetono) {
+    return;
+  }
+
+  montriMesaghon('Konfirmado de via retposhtadreso ...', 'informo');
+
+  try {
+    const datumoj = await vokiServilon(
+      'konfirmiRegistrighon',
+      jhetono
+    );
+
+    // Post sukceso forigu la uzitan jhetonon el la nuna adreso.
+    google.script.history.replace({}, {}, '');
+
+    elektiEniron(false);
+    montriMesaghon(datumoj.mesagho, 'sukceso');
+  } catch (eraro) {
+    traktiEraron(eraro);
+  }
+}
+
+  elemento('kontforigFormularo').addEventListener('submit', evento => {
+  evento.preventDefault();
+
+  const formularo = evento.currentTarget;
+
+  plenumiAgon(formularo, async () => {
+    if (!stato.uzanto || !stato.jhetono) {
+      throw new Error('Bonvolu ensaluti antauh kontforigo.');
+    }
+
+    const pasvorto = elemento('kontforigPasvorto').value;
+    const konfirmita = elemento('kontforigKonfirmo').checked;
+
+    if (!pasvorto) {
+      throw new Error('Bonvolu reenigi vian nunan pasvorton.');
+    }
+
+    if (!konfirmita) {
+      throw new Error(
+        'Bonvolu marki la konfirmilon por aprobi la kontforigon.'
+      );
+    }
+
+    let datumoj;
+
+    try {
+      datumoj = await vokiServilon(
+        'forigiUzantokonton',
+        stato.jhetono,
+        pasvorto
+      );
+    } finally {
+      // Ne lasu la pasvorton en la formularo post la servila peto.
+      elemento('kontforigPasvorto').value = '';
+    }
+
+    // Forigu la lokan sesion nur post sukcesa servila forigo.
+    konserviJhetonon('');
+    stato.uzanto = null;
+
+    formularo.reset();
+    elemento('afishFormularo').reset();
+    elemento('ensalutFormularo').reset();
+    elemento('registrighFormularo').reset();
+
+    const detaloj = formularo.closest('details');
+
+    if (detaloj) {
+      detaloj.open = false;
+    }
+
+    // Forigu la malnovan lokan fluon antauh nova legado.
+    stato.afishoj = [];
+    ghisdatigiKonton();
+    montriFluon();
+    elektiEniron(false);
+
+    montriMesaghon(datumoj.mesagho, 'sukceso');
+
+    await refreshigiFluon();
+  });
+});
+
+// Montru la forigilon nur al la ensalutinta autoro.
+// La servilo sendepende rekontrolas la posedanton dum forigo.
+function aldoniForigilon(ujo, ero, speco) {
+  if (
+    !stato.uzanto ||
+    String(ero.uzantoId) !== String(stato.uzanto.id)
+  ) {
+    return;
+  }
+
+  const estasAfisho = speco === 'afisho';
+  const regilaro = kreiElementon('div', 'forigilaro');
+
+  const malfermaButono = kreiElementon(
+    'button',
+    'duaranga',
+    estasAfisho ? 'Forigi afishon' : 'Forigi komenton'
+  );
+
+  malfermaButono.type = 'button';
+  malfermaButono.setAttribute('aria-expanded', 'false');
+
+  const konfirmujo = kreiElementon('div', 'forigaKonfirmujo');
+  konfirmujo.hidden = true;
+
+  const demando = kreiElementon(
+    'p',
+    '',
+    estasAfisho
+      ? 'Chu vi volas forigi chi tiun afishon kaj chiujn komentojn sub ghi?'
+      : 'Chu vi volas forigi chi tiun komenton?'
+  );
+
+  const butonaro = kreiElementon('div', 'forigaButonaro');
+
+  const jesButono = kreiElementon(
+    'button', 'danghera', 'Jes, forigi'
+  );
+
+  const neButono = kreiElementon(
+    'button', 'duaranga', 'Nuligi'
+  );
+
+  jesButono.type = 'button';
+  neButono.type = 'button';
+
+  butonaro.append(jesButono, neButono);
+  konfirmujo.append(demando, butonaro);
+  regilaro.append(malfermaButono, konfirmujo);
+  ujo.appendChild(regilaro);
+
+  malfermaButono.addEventListener('click', () => {
+    konfirmujo.hidden = false;
+    malfermaButono.hidden = true;
+    malfermaButono.setAttribute('aria-expanded', 'true');
+    neButono.focus();
+  });
+
+  neButono.addEventListener('click', () => {
+    konfirmujo.hidden = true;
+    malfermaButono.hidden = false;
+    malfermaButono.setAttribute('aria-expanded', 'false');
+    malfermaButono.focus();
+  });
+
+  jesButono.addEventListener('click', () => {
+    plenumiAgon(regilaro, async () => {
+      const funkcio = estasAfisho
+        ? 'forigiAfishon'
+        : 'forigiKomenton';
+
+      const datumoj = await vokiServilon(
+        funkcio,
+        stato.jhetono,
+        ero.id
+      );
+
+      // Tuj forigu la eron el la loka kopio.
+      // Ghi ne reaperu se la posta refreshigo malsukcesas.
+      if (estasAfisho) {
+        stato.afishoj = stato.afishoj.filter(afisho =>
+          afisho.id !== ero.id
+        );
+      } else {
+        stato.afishoj.forEach(afisho => {
+          afisho.komentoj = afisho.komentoj.filter(komento =>
+            komento.id !== ero.id
+          );
+        });
+      }
+
+      montriFluon();
+      montriMesaghon(datumoj.mesagho, 'sukceso');
+
+      await refreshigiFluon();
+    });
+  });
+}
+
+// Enmetu chi tie la publikan kontaktadreson de la administranto.
+// La adreso estos videbla al vizitantoj de la informtabulo.
+
+function prepariUzkondichojn() {
+  const butono = elemento('uzkondichaButono');
+  const sekcio = elemento('uzkondichaSekcio');
+
+  // La sekcio aperas nur post klako.
+  sekcio.hidden = true;
+  butono.setAttribute('aria-expanded', 'false');
+
+  butono.addEventListener('click', () => {
+    const malfermi = sekcio.hidden;
+
+    sekcio.hidden = !malfermi;
+    butono.setAttribute('aria-expanded', String(malfermi));
+  });
+}
+
+// La numero malhelpas aplikon de malnova respondo post elsaluto.
+let administraKontaktaPeto = 0;
+
+async function ghisdatigiAdministrantanKontakton() {
+  const petnumero = ++administraKontaktaPeto;
+  const kontakto = elemento('administrantaKontakto');
+  const klarigo = elemento('administrantaKontaktoMankas');
+
+  // Unue forigu eventuale jam montritan adreson.
+  kontakto.hidden = true;
+  kontakto.textContent = '';
+  kontakto.removeAttribute('href');
+
+  klarigo.hidden = false;
+
+  if (!stato.uzanto || !stato.jhetono) {
+    klarigo.textContent =
+      'Por vidi la kontaktadreson, konfirmu vian registrighon kaj ensalutu.';
+    return;
+  }
+
+  klarigo.textContent = 'Shargado de la kontaktadreso ...';
+
+  const jhetono = stato.jhetono;
+
+  try {
+    const retposhto = await vokiServilon(
+      'akiriAdministrantanRetposhton',
+      jhetono
+    );
+
+    // Ignoru la respondon, se la konto au sesio intertempe shanghighis.
+    if (
+      petnumero !== administraKontaktaPeto ||
+      jhetono !== stato.jhetono ||
+      !stato.uzanto
+    ) {
+      return;
+    }
+
+    kontakto.textContent = retposhto;
+    kontakto.href = 'mailto:' + encodeURIComponent(retposhto);
+    kontakto.hidden = false;
+    klarigo.hidden = true;
+  } catch (eraro) {
+    if (
+      petnumero !== administraKontaktaPeto ||
+      jhetono !== stato.jhetono
+    ) {
+      return;
+    }
+
+    klarigo.textContent = eraro.kodo === 'SESIO'
+      ? 'Via sesio eksvalidighis. Ensalutu denove por vidi la kontaktadreson.'
+      : 'Ne eblis shargi la kontaktadreson. Bonvolu reprovi poste.';
+  }
+}
+
+// Kreu tekstan enhavon kun klakeblaj retligiloj.
+// Uzanta teksto neniam estas interpretata kiel HTML.
+// La funkcio ne petas au shargas la ligitan enhavon.
+function kreiEnhavonKunLigiloj(teksto) {
+  const ujo = kreiElementon('p', 'enhavo');
+  const enhavo = String(teksto || '');
+  const shablono = /\b(?:https?:\/\/|www\.)[^\s<>"']+/gi;
+
+  let lastaFino = 0;
+  let kongruo;
+
+  while ((kongruo = shablono.exec(enhavo)) !== null) {
+    const komenco = kongruo.index;
+    const trovita = kongruo[0];
+
+    // Konservu la ordinaran tekston antau la ligilo.
+    ujo.appendChild(
+      document.createTextNode(
+        enhavo.slice(lastaFino, komenco)
+      )
+    );
+
+    let ligilo = trovita;
+    let finaTeksto = '';
+
+    // Apartigu kutiman frazfinan interpunkcion de la adreso.
+    while (ligilo && /[.,;!]$/.test(ligilo)) {
+      finaTeksto = ligilo.slice(-1) + finaTeksto;
+      ligilo = ligilo.slice(0, -1);
+    }
+
+    // Apartigu ferman krampon nur se mankas ghia malferma paro.
+    const paroj = {
+      ')': '(',
+      ']': '[',
+      '}': '{'
+    };
+
+    while (ligilo) {
+      const lasta = ligilo.slice(-1);
+      const malferma = paroj[lasta];
+
+      if (!malferma) {
+        break;
+      }
+
+      const malfermaj = ligilo.split(malferma).length - 1;
+      const fermaj = ligilo.split(lasta).length - 1;
+
+      if (fermaj <= malfermaj) {
+        break;
+      }
+
+      finaTeksto = lasta + finaTeksto;
+      ligilo = ligilo.slice(0, -1);
+    }
+
+    try {
+      const plenaAdreso = /^www\./i.test(ligilo)
+        ? 'https://' + ligilo
+        : ligilo;
+
+      const adreso = new URL(plenaAdreso);
+
+      // Ne kreu plenumeblajn ligilojn au adresojn kun ensalutaj datumoj.
+      if (
+        !['http:', 'https:'].includes(adreso.protocol) ||
+        adreso.username ||
+        adreso.password
+      ) {
+        throw new Error('Nepermesita ligilo.');
+      }
+
+      const ankro = kreiElementon('a', 'tekstaLigilo', ligilo);
+
+      ankro.href = adreso.href;
+      ankro.target = '_blank';
+      ankro.rel = 'noopener noreferrer nofollow ugc';
+      ankro.referrerPolicy = 'no-referrer';
+
+      ujo.appendChild(ankro);
+      ujo.appendChild(document.createTextNode(finaTeksto));
+    } catch (eraro) {
+      // Nevalida adreso restas ordinara teksto.
+      ujo.appendChild(document.createTextNode(trovita));
+    }
+
+    lastaFino = komenco + trovita.length;
+  }
+
+  ujo.appendChild(
+    document.createTextNode(enhavo.slice(lastaFino))
+  );
+
+  return ujo;
+}
+
+prepariUzkondichojn();
+
+  komenci();
+
+  </script>
+</body>
+</html>
