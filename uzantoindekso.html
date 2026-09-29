@@ -1,0 +1,530 @@
+<style>
+  #indeksaButono {
+    margin-left: 8px;
+  }
+
+  #indeksaSekcio {
+    margin-bottom: 24px;
+  }
+
+  #indeksaTitolo {
+    margin-bottom: 0;
+  }
+
+  .indeksaKlarigo {
+    margin-top: 16px;
+  }
+
+  .indeksaArangho {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .indeksaArangho > * {
+    min-width: 0;
+  }
+
+  #indeksaNomo[readonly] {
+    background: #f5f7fb;
+  }
+
+  #indeksaPriMi {
+    min-height: 170px;
+  }
+
+  .indeksaEnskribo {
+    border-top: 1px solid var(--linio);
+    padding: 16px 0;
+  }
+
+  .indeksaEnskribo h3 {
+    margin-bottom: 4px;
+    overflow-wrap: anywhere;
+  }
+
+  .indeksaEnskribo .enhavo {
+    margin-bottom: 0;
+  }
+
+  .indeksaPropraMarko {
+    margin-bottom: 0;
+  }
+
+  #indeksaForigujo {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--linio);
+  }
+
+  @media (max-width: 800px) {
+    .indeksaArangho {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<button
+  id="indeksaButono"
+  type="button"
+  class="duaranga"
+  aria-expanded="false"
+  aria-controls="indeksaSekcio"
+  hidden
+>
+  Indekso
+</button>
+
+<section
+  id="indeksaSekcio"
+  class="karto"
+  aria-labelledby="indeksaTitolo"
+  hidden
+>
+  <div class="interspaco">
+    <h2 id="indeksaTitolo" tabindex="-1">Indekso</h2>
+
+    <button
+      id="indeksaFermaButono"
+      type="button"
+      class="duaranga"
+    >
+      Fermi
+    </button>
+  </div>
+
+  <p class="milda indeksaKlarigo">
+    Chi tiu indekso estas videbla nur al ensalutintaj uzantoj.
+    Partopreno estas libervola: via nomo aperos nur post kiam vi
+    konservos vian enskribon. Vi povas lasi la kampon
+    &quot;Pri mi&quot; malplena.
+  </p>
+
+  <p class="milda">
+    La enskribo ne malaperas post 72 horoj. Ghi restas ghis vi
+    forigas ghin au vian konton, au ghis administra forigo.
+    Ne enmetu konfidencajn informojn: aliaj ensalutintaj uzantoj
+    povas kopii la enhavon.
+  </p>
+
+  <p
+    id="indeksaStato"
+    class="milda"
+    role="status"
+    aria-live="polite"
+  ></p>
+
+  <div id="indeksaEnhavo" class="indeksaArangho" hidden>
+    <div>
+      <h3>Mia enskribo</h3>
+
+      <p id="indeksaPropraStato" class="milda"></p>
+
+      <form id="indeksaFormularo" novalidate>
+        <label for="indeksaNomo">Nomo</label>
+
+        <input
+          id="indeksaNomo"
+          type="text"
+          readonly
+          aria-describedby="indeksaNomaKlarigo"
+        >
+
+        <p id="indeksaNomaKlarigo" class="milda">
+          La nomo venas de via konto kaj ne estas shanghebla chi tie.
+        </p>
+
+        <label for="indeksaPriMi">Pri mi</label>
+
+        <textarea
+          id="indeksaPriMi"
+          maxlength="5000"
+          aria-describedby="indeksaTekstaKlarigo"
+          placeholder="Ekzemple: interesoj kaj kontaktaj retligiloj."
+        ></textarea>
+
+        <p id="indeksaTekstaKlarigo" class="milda">
+          Libervola teksto, maksimume 5000 signoj.
+          Retligiloj komencighantaj per https://, http:// au www.
+          estos klakeblaj. Via konta retposhtadreso ne aperas automate.
+        </p>
+
+        <button id="indeksaKonservaButono" type="submit">
+          Aldoni min al la indekso
+        </button>
+      </form>
+
+      <div id="indeksaForigujo" hidden>
+        <label class="kontforigaKonfirmo">
+          <input id="indeksaForigaKonfirmo" type="checkbox">
+          <span>
+            Mi volas forigi mian tutan indeksan enskribon,
+            inkluzive mian nomon el la indekso.
+            Mia konto, afishoj kaj komentoj restu.
+          </span>
+        </label>
+
+        <button
+          id="indeksaForigaButono"
+          type="button"
+          class="danghera"
+        >
+          Forigi mian enskribon
+        </button>
+      </div>
+    </div>
+
+    <section aria-labelledby="indeksaListaTitolo">
+      <h3 id="indeksaListaTitolo">Uzantoj lau alfabeta ordo</h3>
+      <div id="indeksaListo"></div>
+    </section>
+  </div>
+</section>
+
+<!-- Chi tiu aldono enhavas nur publikajn klarigojn, ne uzantajn datumojn. -->
+<div id="indeksaUzkondichaAldono">
+  <h3>7. Libervola uzantoindekso</h3>
+
+  <p>
+    Ensalutintaj uzantoj povas memvole aldoni sin al la indekso
+    per la butono &quot;Indekso&quot;. La indekso montras la
+    kontonomon kaj, se enmetitan, la tekston &quot;Pri mi&quot;.
+    Nur ensalutintaj uzantoj povas legi ghin en la apo.
+    La administranto povas aliri la datumojn en la administra foliaro.
+  </p>
+
+  <p>
+    La konta retposhtadreso ne estas automate transprenata.
+    Se vi mem enmetas kontaktajn datumojn en &quot;Pri mi&quot;,
+    ili farighas videblaj al aliaj ensalutintaj uzantoj.
+    Ne enmetu fremdajn privatajn datumojn sen permeso.
+    Ankau por la indekso validas la supraj enhavaj reguloj.
+  </p>
+
+  <p>
+    Indeksaj enskriboj ne estas forigataj post 72 horoj.
+    Vi povas redakti la tekston &quot;Pri mi&quot; au forigi
+    vian tutan enskribon. La nomo ne estas redaktebla en la indekso.
+    Forigo de via konto ankau forigas vian indeksan enskribon.
+    Administra forigo pro malobservo de la reguloj restas ebla.
+  </p>
+
+  <p>
+    La indekso ne malhelpas kopiadon fare de aliaj uzantoj.
+    Forigo el la aktivaj folioj ne garantias tujan forvishon el
+    la versihistorio au rezervkopioj de Google.
+    Eksteraj retligiloj funkcias kiel en la afisha fluo:
+    la apo ne shargas ilian enhavon automate.
+  </p>
+</div>
+
+<script>
+(() => {
+  // La chefa pagho jam difinis la komunajn helpfunkciojn kaj la staton.
+  // Chi tiu fermita amplekso evitas novajn tutmondajn variablojn.
+  const butono = elemento('indeksaButono');
+  const sekcio = elemento('indeksaSekcio');
+  const enhavo = elemento('indeksaEnhavo');
+  const formularo = elemento('indeksaFormularo');
+  const nomkampo = elemento('indeksaNomo');
+  const tekstkampo = elemento('indeksaPriMi');
+  const listo = elemento('indeksaListo');
+  const statujo = elemento('indeksaStato');
+  const konservaButono = elemento('indeksaKonservaButono');
+  const forigujo = elemento('indeksaForigujo');
+  const forigaKonfirmo = elemento('indeksaForigaKonfirmo');
+
+  let petnumero = 0;
+  let nunaJhetono = '';
+  let ekzistas = false;
+
+  // Enmetu la novajn erojn en la ekzistantan paghan aranghon.
+  elemento('uzkondichaButono').insertAdjacentElement(
+    'afterend',
+    butono
+  );
+
+  const arangho = document.querySelector('main > .arangho');
+  arangho.parentNode.insertBefore(sekcio, arangho);
+
+  elemento('uzkondichaSekcio').appendChild(
+    elemento('indeksaUzkondichaAldono')
+  );
+
+  // Aldonu klarigon ankau apud la ekzistanta kontforiga formularo.
+  elemento('kontforigFormularo').insertAdjacentElement(
+    'beforebegin',
+    kreiElementon(
+      'p',
+      'milda',
+      'Kontforigo ankau forigos vian eventualan indeksan enskribon.'
+    )
+  );
+
+  function fermiIndekson() {
+    // Malfrua respondo ne rajtas remontri fermitan au elsalutitan enhavon.
+    petnumero++;
+    sekcio.hidden = true;
+    enhavo.hidden = true;
+    butono.setAttribute('aria-expanded', 'false');
+
+    listo.replaceChildren();
+    formularo.reset();
+    nomkampo.value = '';
+    tekstkampo.value = '';
+    elemento('indeksaPropraStato').textContent = '';
+    statujo.textContent = '';
+    forigaKonfirmo.checked = false;
+    forigujo.hidden = true;
+    ekzistas = false;
+  }
+
+  function ghisdatigiIndeksanKonton() {
+    const ensalutinta = Boolean(stato.uzanto && stato.jhetono);
+
+    // Forvishu la lokan kopion dum elsaluto au shangho de sesio.
+    if (!ensalutinta || nunaJhetono !== stato.jhetono) {
+      fermiIndekson();
+    }
+
+    nunaJhetono = ensalutinta ? stato.jhetono : '';
+    butono.hidden = !ensalutinta;
+  }
+
+  // Konservu la ekzistantan kontghisdatigon kaj aldonu la indeksan.
+  // Tiel ensaluto, elsaluto, kontforigo kaj sesieraroj uzas la saman vojon.
+  const antauaKontghisdatigo = ghisdatigiKonton;
+
+  ghisdatigiKonton = function () {
+    antauaKontghisdatigo();
+    ghisdatigiIndeksanKonton();
+  };
+
+  function petoAnkorauValidas(numero, jhetono) {
+    return (
+      numero === petnumero &&
+      jhetono === stato.jhetono &&
+      Boolean(stato.uzanto) &&
+      !sekcio.hidden
+    );
+  }
+
+  function montriIndeksajnDatumojn(datumoj) {
+    ekzistas = datumoj.ekzistas;
+    nomkampo.value = datumoj.nomo;
+    tekstkampo.value = datumoj.priMi;
+
+    elemento('indeksaPropraStato').textContent = ekzistas
+      ? 'Vi jam havas enskribon. Vi povas shanghi la tekston au forigi la enskribon.'
+      : 'Vi ankorau ne estas en la indekso. Nur konservado aldonos vin.';
+
+    konservaButono.textContent = ekzistas
+      ? 'Konservi shanghojn'
+      : 'Aldoni min al la indekso';
+
+    forigujo.hidden = !ekzistas;
+    forigaKonfirmo.checked = false;
+
+    const fragmento = document.createDocumentFragment();
+
+    if (!datumoj.eroj.length) {
+      fragmento.appendChild(
+        kreiElementon(
+          'p',
+          'milda',
+          'Ankorau ne estas enskriboj en la indekso.'
+        )
+      );
+    }
+
+    datumoj.eroj.forEach(ero => {
+      const karto = kreiElementon('article', 'indeksaEnskribo');
+
+      karto.appendChild(
+        kreiElementon('h3', 'autoro', ero.nomo)
+      );
+
+      if (ero.propra) {
+        karto.appendChild(
+          kreiElementon(
+            'p',
+            'milda indeksaPropraMarko',
+            'Via enskribo'
+          )
+        );
+      }
+
+      if (ero.priMi) {
+        // Reuzu la ekzistantan sekuran ligilkreilon.
+        // Neniam interpretu uzantan tekston kiel HTML.
+        karto.appendChild(kreiEnhavonKunLigiloj(ero.priMi));
+      }
+
+      fragmento.appendChild(karto);
+    });
+
+    listo.replaceChildren(fragmento);
+    enhavo.hidden = false;
+
+    statujo.textContent =
+      'Enskriboj: ' + datumoj.eroj.length + '.';
+  }
+
+  async function shargiIndekson(numero, jhetono) {
+    const datumoj = await vokiServilon(
+      'akiriUzantoindekson',
+      jhetono
+    );
+
+    if (!petoAnkorauValidas(numero, jhetono)) {
+      return;
+    }
+
+    montriIndeksajnDatumojn(datumoj);
+  }
+
+  // Chiuj indeksaj petoj ignoras respondojn de antaua sesio.
+  // La komuna helpfunkcio malhelpas duoblan sendon de la regiloj.
+  function plenumiIndeksanAgon(laboro) {
+    if (sekcio.dataset.okupata === 'jes') {
+      return;
+    }
+
+    const numero = ++petnumero;
+    const jhetono = stato.jhetono;
+
+    return plenumiAgon(sekcio, async () => {
+      try {
+        await laboro(numero, jhetono);
+      } catch (eraro) {
+        if (!petoAnkorauValidas(numero, jhetono)) {
+          return;
+        }
+
+        statujo.textContent =
+          eraro.message || 'Ne eblis plenumi la indeksan peton.';
+
+        // Sesieraro ankau fermas kaj malplenigas la indekson.
+        traktiEraron(eraro);
+      }
+    });
+  }
+
+  butono.addEventListener('click', () => {
+    // Ne interrompu skribon per dua klako.
+    if (sekcio.dataset.okupata === 'jes') {
+      return;
+    }
+
+    if (!sekcio.hidden) {
+      fermiIndekson();
+      butono.focus();
+      return;
+    }
+
+    if (!stato.uzanto || !stato.jhetono) {
+      ghisdatigiIndeksanKonton();
+      return;
+    }
+
+    sekcio.hidden = false;
+    enhavo.hidden = true;
+    butono.setAttribute('aria-expanded', 'true');
+    statujo.textContent = 'Shargado de la indekso ...';
+
+    elemento('indeksaTitolo').focus();
+
+    plenumiIndeksanAgon((numero, jhetono) =>
+      shargiIndekson(numero, jhetono)
+    );
+  });
+
+  elemento('indeksaFermaButono').addEventListener('click', () => {
+    fermiIndekson();
+    butono.focus();
+  });
+
+  formularo.addEventListener('submit', evento => {
+    evento.preventDefault();
+
+    plenumiIndeksanAgon(async (numero, jhetono) => {
+      const teksto = tekstkampo.value;
+
+      if (teksto.length > 5000) {
+        throw new Error(
+          'La kampo "Pri mi" rajtas havi maksimume 5000 signojn.'
+        );
+      }
+
+      statujo.textContent = 'Konservado de via enskribo ...';
+
+      // Sendu nek nomon nek uzanto-identigilon.
+      // La servilo mem determinas la posedanton per la sesio.
+      const respondo = await vokiServilon(
+        'konserviUzantoindekson',
+        jhetono,
+        teksto
+      );
+
+      if (!petoAnkorauValidas(numero, jhetono)) {
+        return;
+      }
+
+      // Reflektu la sukcesan skribon ech se la posta legado malsukcesas.
+      ekzistas = true;
+      konservaButono.textContent = 'Konservi shanghojn';
+      forigujo.hidden = false;
+      forigaKonfirmo.checked = false;
+      elemento('indeksaPropraStato').textContent =
+        'Vi jam havas enskribon. Vi povas shanghi la tekston au forigi la enskribon.';
+
+      // Ne plu montru eventuale malnovan liston.
+      listo.replaceChildren();
+
+      montriMesaghon(respondo.mesagho, 'sukceso');
+      await shargiIndekson(numero, jhetono);
+    });
+  });
+
+  elemento('indeksaForigaButono').addEventListener('click', () => {
+    plenumiIndeksanAgon(async (numero, jhetono) => {
+      if (!ekzistas) {
+        return;
+      }
+
+      if (!forigaKonfirmo.checked) {
+        throw new Error(
+          'Bonvolu marki la konfirmilon por forigi vian indeksan enskribon.'
+        );
+      }
+
+      statujo.textContent = 'Forigado de via enskribo ...';
+
+      const respondo = await vokiServilon(
+        'forigiUzantoindekson',
+        jhetono
+      );
+
+      if (!petoAnkorauValidas(numero, jhetono)) {
+        return;
+      }
+
+      // Tuj forvishu la forigitan enhavon el la loka kopio.
+      ekzistas = false;
+      tekstkampo.value = '';
+      forigaKonfirmo.checked = false;
+      forigujo.hidden = true;
+      konservaButono.textContent = 'Aldoni min al la indekso';
+      elemento('indeksaPropraStato').textContent =
+        'Vi ankorau ne estas en la indekso. Nur konservado aldonos vin.';
+      listo.replaceChildren();
+
+      montriMesaghon(respondo.mesagho, 'sukceso');
+      await shargiIndekson(numero, jhetono);
+    });
+  });
+
+  ghisdatigiIndeksanKonton();
+})();
+</script>
