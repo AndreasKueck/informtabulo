@@ -6,6 +6,7 @@ const AGORDOJ = Object.freeze({
   uzantoj: 'Uzantoj',
   afishoj: 'Afishoj',
   komentoj: 'Komentoj',
+  indekso: 'Indekso',
   vivdauro: 72 * 60 * 60 * 1000,
   sesiodauro: 6 * 60 * 60,
   maksimumajAfishoj: 100,
@@ -42,6 +43,12 @@ const KAPOJ = Object.freeze({
     'jhetono_haketo',
     'dato',
     'eksvalidigho'
+  ],
+  // La identigilo estas la identigilo de la posedanta uzanto.
+  // La nomo chiam venas de la konto, ne de redaktebla indeksa kampo.
+  Indekso: [
+    'id',
+    'pri_mi'
   ]
 });
 
@@ -56,9 +63,134 @@ const KONFIRMA_AGORDOJ = Object.freeze({
 
 // Google postulas la nomon doGet por servi ret-apon.
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('index')
+  const chefaEnhavo =
+    HtmlService.createHtmlOutputFromFile('index').getContent();
+
+  const indeksaEnhavo =
+    HtmlService.createHtmlOutputFromFile('uzantoindekso').getContent();
+
+  // Enmetu nur fiksan projektan HTML, neniam privatajn indeksajn datumojn.
+  // La ekzistanta dosiero index.html ne bezonas shanghon.
+  const enhavo = chefaEnhavo.replace(
+    /<\/body>/i,
+    () => indeksaEnhavo + '\n</body>'
+  );
+
+  return HtmlService.createHtmlOutput(enhavo)
     .setTitle('Radio, televido kaj pli')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+// Nur valida sesio rajtigas legadon de la indekso.
+function akiriUzantoindekson(jhetono) {
+  return sekure_(() => kunShlosilo_(() => {
+    const uzanto = postuliUzanton_(jhetono);
+    const uzantoId = String(uzanto.id);
+    const nomoj = new Map();
+
+    legiFoliojn_(AGORDOJ.uzantoj).forEach(ero => {
+      nomoj.set(String(ero.id), String(ero.nomo));
+    });
+
+    const vicoj = legiFoliojn_(AGORDOJ.indekso);
+    const propra = vicoj.find(ero => String(ero.id) === uzantoId);
+
+    // Liveru nur memvole kreitajn enskribojn de ekzistantaj kontoj.
+    // Kontaj retposhtadresoj kaj pasvortoj ne apartenas al la respondo.
+    const eroj = vicoj
+      .filter(ero => nomoj.has(String(ero.id)))
+      .map(ero => ({
+        nomo: nomoj.get(String(ero.id)),
+        priMi: String(ero.pri_mi || ''),
+        propra: String(ero.id) === uzantoId
+      }))
+      .sort((unua, dua) =>
+        unua.nomo.localeCompare(
+          dua.nomo,
+          'eo',
+          { sensitivity: 'base' }
+        ) ||
+        unua.nomo.localeCompare(dua.nomo, 'eo')
+      );
+
+    return {
+      nomo: String(uzanto.nomo),
+      ekzistas: Boolean(propra),
+      priMi: propra ? String(propra.pri_mi || '') : '',
+      eroj: eroj
+    };
+  }));
+}
+
+// La posedanto kaj la nomo venas nur de la servila sesio.
+// Malplena teksto estas valida kaj kreas enskribon kun nur la nomo.
+function konserviUzantoindekson(jhetono, priMi) {
+  return sekure_(() => {
+    if (typeof priMi !== 'string') {
+      malsukcesi_('Nevalida valoro: Pri mi.');
+    }
+
+    if (priMi.length > 5000) {
+      malsukcesi_(
+        'La kampo "Pri mi" rajtas havi maksimume 5000 signojn.'
+      );
+    }
+
+    priMi = priMi.trim();
+
+    return kunShlosilo_(() => {
+      const uzanto = postuliUzanton_(jhetono);
+      const uzantoId = String(uzanto.id);
+      const folio = akiriFolion_(AGORDOJ.indekso);
+      const nombro = folio.getLastRow() - 1;
+
+      const vicoj = nombro > 0
+        ? folio.getRange(
+            2, 1, nombro, KAPOJ.Indekso.length
+          ).getValues()
+        : [];
+
+      const indekso = vicoj.findIndex(vico =>
+        String(vico[0]) === uzantoId
+      );
+
+      const numero = indekso >= 0
+        ? indekso + 2
+        : folio.getLastRow() + 1;
+
+      folio.getRange(
+        numero, 1, 1, KAPOJ.Indekso.length
+      ).setValues([[
+        protektiChelon_(uzantoId),
+        protektiChelon_(priMi)
+      ]]);
+
+      SpreadsheetApp.flush();
+
+      return {
+        mesagho: 'Via indeksa enskribo estas konservita.'
+      };
+    });
+  });
+}
+
+// La uzanto povas forigi nur sian propran enskribon.
+function forigiUzantoindekson(jhetono) {
+  return sekure_(() => kunShlosilo_(() => {
+    const uzanto = postuliUzanton_(jhetono);
+
+    forigiKongruajnVicojn_(
+      AGORDOJ.indekso,
+      ero => String(ero.id) === String(uzanto.id)
+    );
+
+    SpreadsheetApp.flush();
+
+    return {
+      mesagho:
+        'Via indeksa enskribo estas forigita. Via konto restas.'
+    };
+  }));
 }
 
 function forigiAfishon(jhetono, afishoId) {
@@ -229,6 +361,12 @@ function forigiUzantokonton(jhetono, pasvorto) {
           String(konfirmo.retposhto).toLowerCase() === retposhto
       );
 
+      // La daura indeksa enskribo malaperas kune kun la konto.
+      forigiKongruajnVicojn_(
+        AGORDOJ.indekso,
+        ero => String(ero.id) === uzantoId
+      );
+
       // Forigu la konton laste.
       // Se pli frua operacio malsukcesas, la uzanto povas reprovi.
       forigiKongruajnVicojn_(
@@ -252,24 +390,27 @@ function forigiUzantokonton(jhetono, pasvorto) {
   });
 }
 
-// Provizora administra enirejo.
-// Forigu ghin antau publikigo de la nova versio.
-function prepariRetposhtanKonfirmon() {
-  prepariApon_();
+// Konstanta prepara enirejo por la redaktilo de la tabel-ligita projekto.
+function prepariNovanApon() {
+  // Ret-apa voko ne havas aliron al la uzantinterfaco de la tabelo.
+  // Faru chi tiun kontrolon antau ajna prepara operacio.
+  try {
+    SpreadsheetApp.getUi();
+  } catch (eraro) {
+    throw new Error(
+      'Rulu chi tiun funkcion el la Apps-Script-redaktilo ' +
+      'ligita al la malfermita Gugla tabelo.'
+    );
+  }
 
-  // La voko postulas la permeson bezonatan por retposhta sendo.
+  // Chi tiu voko ankau postulas la permeson por retposhta sendo.
   const kvoto = MailApp.getRemainingDailyQuota();
 
-  console.log(
-    'Retposhta konfirmo estas preparita. ' +
-    'Restanta taga ricevanta kvoto: ' + kvoto
-  );
-}
+  const adreso = prepariApon_();
 
-// Provizora enirejo por preparado el la redaktilo.
-// Forigu ghin antau publikigo de la ret-apo.
-function prepariApon() {
-  return prepariApon_();
+  console.log('La apo estas preparita.');
+  console.log('Foliaro: ' + adreso);
+  console.log('Restanta taga ricevanta kvoto: ' + kvoto);
 }
 
 // Rulu chi tiun privatan funkcion unufoje el la redaktilo.
@@ -278,7 +419,8 @@ function prepariApon_() {
   return kunShlosilo_(() => {
     const ecoj = PropertiesService.getScriptProperties();
     const identigilo =
-      FOLIARO_ID.trim() || ecoj.getProperty('FOLIARO_ID');
+      String(FOLIARO_ID || '').trim() ||
+      ecoj.getProperty('FOLIARO_ID');
 
     let foliaro;
 
@@ -394,7 +536,7 @@ function kunShlosilo_(laboro) {
 }
 
 function akiriFoliaron_() {
-  const identigilo = FOLIARO_ID.trim() ||
+  const identigilo = String(FOLIARO_ID || '').trim() ||
     PropertiesService.getScriptProperties().getProperty('FOLIARO_ID');
 
   if (!identigilo) {
@@ -653,6 +795,17 @@ function postuliUzanton_(jhetono) {
   return uzanto;
 }
 
+// Komparu nomojn sen distingo de majuskloj kaj minusklaj literoj.
+// Unuecigu Unikodon kaj blankajn spacojn nur por la komparo.
+function nomshlosilo_(nomo) {
+  return String(nomo)
+    .normalize('NFC')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+    .normalize('NFC');
+}
+
 function registriUzanton(nomo, retposhto, pasvorto) {
   return sekure_(() => {
     nomo = validigiTekston_(nomo, 80, 'Nomo');
@@ -685,13 +838,27 @@ function registriUzanton(nomo, retposhto, pasvorto) {
           'plenigu la registrighan formularon denove.'
       };
 
-      const ekzistas = legiFoliojn_(AGORDOJ.uzantoj).some(uzanto =>
-        String(uzanto.retposhto).toLowerCase() === retposhto
-      );
+      const uzantoj = legiFoliojn_(AGORDOJ.uzantoj);
 
-      if (ekzistas) {
-        return respondo;
-      }
+const ekzistas = uzantoj.some(uzanto =>
+  String(uzanto.retposhto).toLowerCase() === retposhto
+);
+
+// Konservu la gheneralan respondon por jam registrita retposhto.
+if (ekzistas) {
+  return respondo;
+}
+
+const nomaShlosilo = nomshlosilo_(nomo);
+
+if (uzantoj.some(uzanto =>
+  nomshlosilo_(uzanto.nomo) === nomaShlosilo
+)) {
+  malsukcesi_(
+    'Tiu uzantonomo jam estas okupita. Bonvolu elekti alian.',
+    'NOMO_OKUPITA'
+  );
+}
 
       const folio = akiriFolion_(KONFIRMA_AGORDOJ.folio);
       const nombro = folio.getLastRow() - 1;
@@ -701,6 +868,22 @@ function registriUzanton(nomo, retposhto, pasvorto) {
             2, 1, nombro, KAPOJ.Konfirmoj.length
           ).getValues()
         : [];
+
+// Valida konfirmpeto provizore rezervas la nomon.
+// La sama retposhto rajtas peti novan konfirman ligilon.
+const nomoRezervita = vicoj.some(vico =>
+  nomshlosilo_(vico[3]) === nomaShlosilo &&
+  String(vico[1]).toLowerCase() !== retposhto &&
+  akiriTempon_(vico[6]) > Date.now()
+);
+
+if (nomoRezervita) {
+  malsukcesi_(
+    'Tiu uzantonomo estas provizore rezervita. ' +
+    'Bonvolu elekti alian au reprovi poste.',
+    'NOMO_REZERVITA'
+  );
+}        
 
       const indekso = vicoj.findIndex(vico =>
         String(vico[1]).toLowerCase() === retposhto
@@ -907,21 +1090,39 @@ function konfirmiRegistrighon(jhetono) {
 
       const retposhto = String(vico[1]).toLowerCase();
 
-      const ekzistas = legiFoliojn_(AGORDOJ.uzantoj).some(uzanto =>
-        String(uzanto.retposhto).toLowerCase() === retposhto
-      );
+const uzantoj = legiFoliojn_(AGORDOJ.uzantoj);
 
-      if (!ekzistas) {
-        // Nur chi tie nekonfirmita registrigho farighas vera konto.
-        // La pasvorto jam estas haketita; ne haketu ghin duan fojon.
-        skribiVicon_(AGORDOJ.uzantoj, [
-          Utilities.getUuid(),
-          retposhto,
-          String(vico[2]),
-          String(vico[3]),
-          new Date()
-        ]);
-      }
+const ekzistas = uzantoj.some(uzanto =>
+  String(uzanto.retposhto).toLowerCase() === retposhto
+);
+
+if (!ekzistas) {
+  const nomaShlosilo = nomshlosilo_(vico[3]);
+
+  // Rekontrolu tuj antau la kreado de la konto.
+  if (uzantoj.some(uzanto =>
+    nomshlosilo_(uzanto.nomo) === nomaShlosilo
+  )) {
+    // Nuligu la konfirmpeton, kiu ne plu povas esti plenumita.
+    folio.deleteRow(indekso + 2);
+    SpreadsheetApp.flush();
+
+    malsukcesi_(
+      'Tiu uzantonomo jam estas okupita. ' +
+      'Bonvolu registrighi denove kun alia nomo.',
+      'NOMO_OKUPITA'
+    );
+  }
+
+  // La pasvorto jam estas haketita.
+  skribiVicon_(AGORDOJ.uzantoj, [
+    Utilities.getUuid(),
+    retposhto,
+    String(vico[2]),
+    String(vico[3]),
+    new Date()
+  ]);
+}
 
       // Forigo de la provizora vico nuligas la jhetonon.
       folio.deleteRow(indekso + 2);
@@ -1097,6 +1298,7 @@ function forigiVicojn_(folio, numeroj) {
 // Chi tiu interna funkcio estas vokata nur dum aktiva shlosilo.
 // Komentoj de forigita afisho estas forigataj sendepende de sia agho.
 // Bildoligiloj malaperas kune kun la afishaj vicoj.
+// La daura folio Indekso ne partoprenas en chi tiu purigado.
 function purigiMalnovajhojn_() {
   purigiKonfirmojn_();
   const limo = Date.now() - AGORDOJ.vivdauro;
@@ -1147,7 +1349,7 @@ function purigiMalnovajhojn_() {
 
 // La substreko malpermesas rektan vokon per google.script.run.
 // La tempobazita ellasilo tamen povas voki chi tiun funkcion.
-function forigiMalnovajhojn_() {  
+function forigiMalnovajhojn_() {
   return kunShlosilo_(() => purigiMalnovajhojn_());
 }
 
@@ -1205,7 +1407,7 @@ function akiriAfishojn() {
       id: String(afisho.id),
       uzantoId: String(afisho.uzanto_id),
       nomo: nomoj[String(afisho.uzanto_id)] || 'Nekonata uzanto',
-      teksto: String(afisho.teksto),      
+      teksto: String(afisho.teksto),
       dato: formiDaton_(afisho.dato),
       komentoj: komentojLauAfisho[String(afisho.id)] || []
     }));
@@ -1213,14 +1415,15 @@ function akiriAfishojn() {
 }
 
 // La kontakta adreso (ADMINISTRANTA_RETPOSHTO) estu notita en la projektaj agordoj.
-const ADMINISTRANTA_RETPOSHTO = properties.getProperty('ADMINISTRANTA_RETPOSHTO');
+const ADMINISTRANTA_RETPOSHTO =
+  properties.getProperty('ADMINISTRANTA_RETPOSHTO');
 
 // Nur ensalutinta uzanto povas ricevi la kontaktadreson.
 function akiriAdministrantanRetposhton(jhetono) {
   return sekure_(() => {
     postuliUzanton_(jhetono);
 
-    const retposhto = ADMINISTRANTA_RETPOSHTO.trim();
+    const retposhto = String(ADMINISTRANTA_RETPOSHTO || '').trim();
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(retposhto)) {
       malsukcesi_(
