@@ -756,7 +756,7 @@ button.danghera:hover {
 </p>
 <p class="milda noto">
   <a href="https://jhau.de/privateco.html" target="_blank">Privateco</a>
-</p>          
+</p>
         </section>
       </aside>
 
@@ -1294,17 +1294,6 @@ elemento('afishFormularo').addEventListener('submit', evento => {
 
       ghisdatigiKonton();
       await refreshigiFluon();
-
-      // Fona refreshigo funkcias nur en videbla, neokupata langeto.
-      setInterval(() => {
-        if (
-          !document.hidden &&
-          !stato.operacioj &&
-          !estasMalneto()
-        ) {
-          refreshigiFluon();
-        }
-      }, 60000);
     }
 
     
@@ -1678,8 +1667,9 @@ function kreiEnhavonKunLigiloj(teksto) {
 
 prepariUzkondichojn();
 
-  komenci();
+// komenci() estas vokata post instalado de la alirebleca aldono.
 
   </script>
+  
 </body>
 </html>
