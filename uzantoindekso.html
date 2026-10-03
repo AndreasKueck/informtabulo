@@ -528,3 +528,1195 @@
   ghisdatigiIndeksanKonton();
 })();
 </script>
+
+<style>
+  /* Pli fortaj kontrastoj kaj klare videbla klavara fokuso. */
+  :root {
+    --milda: #4f5c72;
+  }
+
+  header {
+    background: #214bae;
+  }
+
+  header p {
+    opacity: 1;
+  }
+
+  input,
+  textarea {
+    border-color: #7b8798;
+  }
+
+  button {
+    min-height: 44px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  a:focus,
+  button:focus,
+  input:focus,
+  textarea:focus,
+  summary:focus,
+  [tabindex="-1"]:focus {
+    outline: 3px solid #1746a2;
+    outline-offset: 4px;
+  }
+
+  header a:focus,
+  header button:focus {
+    outline-color: #fff;
+  }
+
+  [aria-disabled="true"] {
+    cursor: wait;
+  }
+
+  .kontforigaKonfirmo {
+    min-height: 44px;
+    padding: 6px 0;
+  }
+
+  .kontforigo summary {
+    min-height: 44px;
+    padding: 8px 0;
+  }
+
+  .nurLegilo {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .saltaLigilo {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 10000;
+    padding: 12px 18px;
+    background: #fff;
+    color: #1746a2;
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    transform: translateY(-200%);
+  }
+
+  .saltaLigilo:focus {
+    transform: translateY(0);
+  }
+
+  #skribaButono {
+    margin: 8px 0 8px 8px;
+  }
+
+  #indeksaButono,
+  #uzkondichaButono {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  .formularaHelpo {
+    margin: 10px 0;
+  }
+
+  [aria-invalid="true"] {
+    border: 2px solid #a52828;
+  }
+
+  .karto > h3.autoro,
+  .komento > h5.autoro {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .komentaro > h4 {
+    font-size: 1rem;
+    margin: 0 0 12px;
+  }
+
+  .indeksaEnskribo > h4 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+
+  @media (forced-colors: active) {
+    button,
+    input,
+    textarea {
+      border: 1px solid ButtonText;
+    }
+
+    :focus {
+      outline-color: Highlight !important;
+    }
+  }
+</style>
+
+<script>
+(() => {
+  'use strict';
+
+  /*
+   * SKRIBMANIERO
+   *
+   * La elekto validas nur por la nuna paĝo.
+   * Neniam konservu ĝin en sessionStorage aŭ localStorage.
+   */
+  let supersigna = false;
+
+  const tekstajMemoroj = new WeakMap();
+  const atributajMemoroj = new WeakMap();
+
+  /*
+   * Tiuj enhavoj estas datumoj, ne tradukebla interfaco.
+   * Formularaj .value-valoroj neniam estas prilaborataj.
+   */
+  const protektitaj = [
+    '[data-uzanta]',
+    '[data-skribo="ne"]',
+    '.autoro',
+    '.enhavo',
+    '#kontoNomo',
+    '#kontoRetposhto',
+    '#administrantaKontakto',
+    '[contenteditable]:not([contenteditable="false"])'
+  ].join(',');
+
+  const netekstaj = [
+    'script',
+    'style',
+    'textarea',
+    'noscript',
+    'template'
+  ].join(',');
+
+  const tekstajAtributoj = [
+    'aria-label',
+    'aria-description',
+    'aria-valuetext',
+    'title',
+    'alt',
+    'placeholder'
+  ];
+
+  /*
+   * H-skribo ne estas ĝenerale inversebla:
+   * ekzemple "au" ne ĉiam signifas "aŭ".
+   *
+   * Tial la suba normaligo estas limigita al la konata,
+   * Esperanta interfaca vortprovizo de ĉi tiu apo.
+   * Novajn interfacajn tekstojn prefere skribu rekte supersigne.
+   */
+  function supersignigiInterfacon(teksto) {
+    const literoj = {
+      c: 'ĉ',
+      g: 'ĝ',
+      h: 'ĥ',
+      j: 'ĵ',
+      s: 'ŝ'
+    };
+
+    return String(teksto)
+      .normalize('NFC')
+      .replace(/([cghjs])h/gi, (paro, litero) => {
+        const nova = literoj[litero.toLowerCase()];
+        return litero === litero.toUpperCase()
+          ? nova.toUpperCase()
+          : nova;
+      })
+      .replace(
+        /\b(ankorau|ankau|antau|almenau|ambau|anstatau|kontrau|dau|auto)([a-zĉĝĥĵŝŭ]*)/gi,
+        (tuta, radiko, fino) => {
+          /*
+           * La originala interfaco enhavas ankaŭ kelkajn
+           * formojn "ankauh", "antauh" kaj "ankorauh".
+           */
+          if (/^(ankorau|ankau|antau)$/i.test(radiko)) {
+            fino = fino.replace(/^h$/i, '');
+          }
+
+          return radiko.replace(
+            /u/i,
+            litero => litero === 'U' ? 'Ŭ' : 'ŭ'
+          ) + fino;
+        }
+      )
+      .replace(/\b(au|lau)\b/gi, vorto =>
+        vorto.replace(/u/i, litero => litero === 'U' ? 'Ŭ' : 'ŭ')
+      );
+  }
+
+  function higi(teksto) {
+    const mapo = {
+      'ĉ': 'ch', 'Ĉ': 'Ch',
+      'ĝ': 'gh', 'Ĝ': 'Gh',
+      'ĥ': 'hh', 'Ĥ': 'Hh',
+      'ĵ': 'jh', 'Ĵ': 'Jh',
+      'ŝ': 'sh', 'Ŝ': 'Sh',
+      'ŭ': 'u',  'Ŭ': 'U'
+    };
+
+    return teksto.replace(/[ĉĈĝĜĥĤĵĴŝŜŭŬ]/g, litero => mapo[litero]);
+  }
+
+  /*
+   * Eĉ en interfaca frazo, retadresoj kaj retpoŝtadresoj
+   * restas netuŝitaj.
+   */
+  function prezenti(teksto) {
+    const partoj = String(teksto).split(
+      /(https?:\/\/[^\s<>]+|www\.[^\s<>]+|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/gi
+    );
+
+    return partoj.map((parto, indekso) => {
+      if (indekso % 2 === 1) {
+        return parto;
+      }
+
+      const kanona = supersignigiInterfacon(parto);
+      return supersigna ? kanona : higi(kanona);
+    }).join('');
+  }
+
+  function protektita(ero) {
+    return Boolean(ero && ero.closest(protektitaj));
+  }
+
+  function prilaboriTekstnodon(nodo) {
+    const patro = nodo.parentElement;
+
+    if (
+      !patro ||
+      protektita(patro) ||
+      patro.closest(netekstaj)
+    ) {
+      return;
+    }
+
+    let memoro = tekstajMemoroj.get(nodo);
+
+    /*
+     * Rekonu novan tekston skribitan de la apo.
+     * Nia propra antaŭa rezulto ne fariĝu nova fonto.
+     */
+    if (!memoro || nodo.data !== memoro.montrita) {
+      memoro = {
+        fonto: nodo.data,
+        montrita: nodo.data
+      };
+    }
+
+    const nova = prezenti(memoro.fonto);
+    memoro.montrita = nova;
+    tekstajMemoroj.set(nodo, memoro);
+
+    if (nodo.data !== nova) {
+      nodo.data = nova;
+    }
+  }
+
+  function prilaboriAtributojn(ero) {
+    if (
+      protektita(ero) ||
+      ero.closest('script,style,noscript,template')
+    ) {
+      return;
+    }
+
+    let memoroj = atributajMemoroj.get(ero);
+
+    if (!memoroj) {
+      memoroj = new Map();
+      atributajMemoroj.set(ero, memoroj);
+    }
+
+    tekstajAtributoj.forEach(nomo => {
+      if (!ero.hasAttribute(nomo)) {
+        memoroj.delete(nomo);
+        return;
+      }
+
+      const nuna = ero.getAttribute(nomo);
+      let memoro = memoroj.get(nomo);
+
+      if (!memoro || nuna !== memoro.montrita) {
+        memoro = { fonto: nuna, montrita: nuna };
+      }
+
+      const nova = prezenti(memoro.fonto);
+      memoro.montrita = nova;
+      memoroj.set(nomo, memoro);
+
+      if (nuna !== nova) {
+        ero.setAttribute(nomo, nova);
+      }
+    });
+  }
+
+  function aplikiSkribon() {
+    const promenilo = document.createTreeWalker(
+      document.documentElement,
+      NodeFilter.SHOW_TEXT
+    );
+
+    let nodo;
+
+    while ((nodo = promenilo.nextNode())) {
+      prilaboriTekstnodon(nodo);
+    }
+
+    document.querySelectorAll(
+      tekstajAtributoj.map(nomo => '[' + nomo + ']').join(',')
+    ).forEach(prilaboriAtributojn);
+  }
+
+  /*
+   * ĜENERALAJ ALIREBLECAJ HELPILOJ
+   */
+  function aldoniPriskribon(ero, identigiloj) {
+    const valoroj = new Set(
+      (ero.getAttribute('aria-describedby') || '')
+        .split(/\s+/)
+        .filter(Boolean)
+    );
+
+    identigiloj.split(/\s+/).filter(Boolean).forEach(id => {
+      valoroj.add(id);
+    });
+
+    ero.setAttribute('aria-describedby', [...valoroj].join(' '));
+  }
+
+  function videbla(ero) {
+    return Boolean(
+      ero &&
+      ero.isConnected &&
+      !ero.closest('[hidden]') &&
+      ero.getClientRects().length
+    );
+  }
+
+  function fokusi(ero) {
+    if (videbla(ero)) {
+      ero.focus();
+    }
+  }
+
+  function prepariTitolon(sekcioId, titoloId) {
+    const sekcio = elemento(sekcioId);
+    const titolo = sekcio.querySelector('h2');
+
+    titolo.id = titoloId;
+    titolo.tabIndex = -1;
+    sekcio.setAttribute('aria-labelledby', titoloId);
+
+    return titolo;
+  }
+
+  const eniraTitolo = prepariTitolon('enirSekcio', 'eniraTitolo');
+  const kontaTitolo = prepariTitolon('kontoSekcio', 'kontaTitolo');
+
+  prepariTitolon('novaAfishoSekcio', 'novaAfishaTitolo');
+
+  const fluaTitolo = document.querySelector('.flukapo h2');
+  fluaTitolo.id = 'fluaTitolo';
+  fluaTitolo.tabIndex = -1;
+
+  const chefa = document.querySelector('main');
+  chefa.id = 'chefaEnhavo';
+  chefa.tabIndex = -1;
+
+  document.querySelector('aside')
+    .setAttribute('aria-label', 'Konto kaj informoj');
+
+  const salto = kreiElementon(
+    'a',
+    'saltaLigilo',
+    'Salti al la ĉefa enhavo'
+  );
+
+  salto.href = '#chefaEnhavo';
+  salto.target = '_self';
+
+  salto.addEventListener('click', evento => {
+    evento.preventDefault();
+    fokusi(chefa);
+  });
+
+  document.body.prepend(salto);
+
+  /*
+   * Konstantaj anoncaj regionoj.
+   * Ili neniam estas hidden aŭ display:none.
+   */
+  const anoncUjo = kreiElementon('div', 'nurLegilo');
+
+  const sukcesaAnonco = kreiElementon('div');
+  sukcesaAnonco.setAttribute('role', 'status');
+  sukcesaAnonco.setAttribute('aria-atomic', 'true');
+
+  const eraraAnonco = kreiElementon('div');
+  eraraAnonco.setAttribute('role', 'alert');
+  eraraAnonco.setAttribute('aria-atomic', 'true');
+
+  anoncUjo.append(sukcesaAnonco, eraraAnonco);
+  document.body.appendChild(anoncUjo);
+
+  let anoncaTemporizilo;
+
+  function anonci(teksto, eraro = false) {
+    clearTimeout(anoncaTemporizilo);
+
+    sukcesaAnonco.textContent = '';
+    eraraAnonco.textContent = '';
+
+    if (!teksto) {
+      return;
+    }
+
+    anoncaTemporizilo = setTimeout(() => {
+      const celo = eraro ? eraraAnonco : sukcesaAnonco;
+      celo.textContent = prezenti(teksto);
+    }, 50);
+  }
+
+  /*
+   * La videbla mesaĝo ne plu estas mem malkaŝata live-regiono.
+   * La konstantaj regionoj supre plenumas la anoncan taskon.
+   */
+  const mesaghujo = elemento('mesagho');
+
+  mesaghujo.removeAttribute('role');
+  mesaghujo.removeAttribute('aria-live');
+  mesaghujo.tabIndex = -1;
+
+  montriMesaghon = function (teksto, speco = 'informo') {
+    mesaghujo.textContent = prezenti(teksto || '');
+    mesaghujo.className = 'mesagho ' + speco;
+    mesaghujo.hidden = !teksto;
+
+    anonci(teksto, speco === 'eraro');
+  };
+
+  const antauaErartraktado = traktiEraron;
+
+  traktiEraron = function (eraro) {
+    antauaErartraktado(eraro);
+    fokusi(mesaghujo);
+  };
+
+  /*
+   * La ŝanĝiĝanta salutlinio enhavas apartan,
+   * eksplicite protektitan uzantonomon.
+   */
+  const antauaKontghisdatigo = ghisdatigiKonton;
+
+  ghisdatigiKonton = function () {
+    const antauaFokuso = document.activeElement;
+
+    antauaKontghisdatigo();
+
+    const salutlinio = elemento('nunaNomo');
+
+    if (stato.uzanto) {
+      const nomo = kreiElementon('span', '', stato.uzanto.nomo);
+      nomo.setAttribute('data-uzanta', '');
+      nomo.setAttribute('translate', 'no');
+
+      salutlinio.replaceChildren(
+        document.createTextNode('Ensalutinta: '),
+        nomo
+      );
+    } else {
+      salutlinio.textContent = 'Vi estas vizitanto';
+    }
+
+    if (
+      antauaFokuso !== document.body &&
+      !videbla(antauaFokuso)
+    ) {
+      fokusi(stato.uzanto ? kontaTitolo : eniraTitolo);
+    }
+
+    aplikiSkribon();
+  };
+
+  /*
+   * FORMULAROJ
+   */
+  const devigajId = [
+    'ensalutRetposhto',
+    'ensalutPasvorto',
+    'registrighNomo',
+    'registrighRetposhto',
+    'registrighPasvorto',
+    'registrighRipeto',
+    'kontforigPasvorto',
+    'kontforigKonfirmo',
+    'afishTeksto'
+  ];
+
+  devigajId.forEach(id => {
+    elemento(id).required = true;
+  });
+
+  [
+    'ensalutPasvorto',
+    'registrighPasvorto',
+    'registrighRipeto',
+    'kontforigPasvorto'
+  ].forEach(id => {
+    elemento(id).minLength = 10;
+  });
+
+  [
+    'ensalutRetposhto',
+    'registrighRetposhto'
+  ].forEach(id => {
+    const kampo = elemento(id);
+    kampo.inputMode = 'email';
+    kampo.spellcheck = false;
+    kampo.setAttribute('autocapitalize', 'none');
+  });
+
+  const formularajNomoj = {
+    ensalutFormularo: 'Ensaluto',
+    registrighFormularo: 'Registriĝo',
+    kontforigFormularo: 'Forigo de konto',
+    afishFormularo: 'Nova afiŝo',
+    indeksaFormularo: 'Mia indeksa enskribo'
+  };
+
+  Object.entries(formularajNomoj).forEach(([id, nomo]) => {
+    elemento(id).setAttribute('aria-label', nomo);
+  });
+
+  elemento('elektiEnsaluton')
+    .setAttribute('aria-controls', 'ensalutFormularo');
+
+  elemento('elektiRegistrighon')
+    .setAttribute('aria-controls', 'registrighFormularo');
+
+  const pasvortaHelpo = kreiElementon(
+    'p',
+    'milda formularaHelpo',
+    'La pasvorto devas havi inter 10 kaj 200 signojn.'
+  );
+
+  pasvortaHelpo.id = 'pasvortaHelpo';
+
+  elemento('registrighPasvorto')
+    .insertAdjacentElement('afterend', pasvortaHelpo);
+
+  aldoniPriskribon(elemento('registrighPasvorto'), 'pasvortaHelpo');
+  aldoniPriskribon(elemento('registrighRipeto'), 'pasvortaHelpo');
+
+  function aldoniDeviganNoton(formularo) {
+    if (formularo.querySelector('[data-deviga-noto]')) {
+      return;
+    }
+
+    const noto = kreiElementon(
+      'p',
+      'milda formularaHelpo',
+      'Ĉiuj kampoj en ĉi tiu formularo estas devigaj.'
+    );
+
+    noto.setAttribute('data-deviga-noto', '');
+    formularo.prepend(noto);
+  }
+
+  [
+    'ensalutFormularo',
+    'registrighFormularo',
+    'kontforigFormularo',
+    'afishFormularo'
+  ].forEach(id => aldoniDeviganNoton(elemento(id)));
+
+  function validigiFormularon(formularo) {
+    const kampoj = [...formularo.querySelectorAll('input, textarea')];
+    let unua = null;
+    let unuaMesagho = '';
+
+    kampoj.forEach(kampo => {
+      if (kampo.disabled || kampo.readOnly) {
+        return;
+      }
+
+      let eraro = '';
+
+      if (kampo.type === 'checkbox') {
+        if (kampo.required && !kampo.checked) {
+          eraro = 'Bonvolu marki la konfirmilon.';
+        }
+      } else if (kampo.required && !kampo.value.trim()) {
+        eraro = 'Bonvolu plenigi ĉi tiun devigan kampon.';
+      } else if (kampo.value && kampo.validity.typeMismatch) {
+        eraro = 'Bonvolu enigi validan retpoŝtadreson.';
+      } else if (
+        kampo.value &&
+        kampo.minLength > 0 &&
+        kampo.value.length < kampo.minLength
+      ) {
+        eraro =
+          'Bonvolu enigi almenaŭ ' + kampo.minLength + ' signojn.';
+      } else if (
+        kampo.maxLength >= 0 &&
+        kampo.value.length > kampo.maxLength
+      ) {
+        eraro =
+          'La kampo rajtas havi maksimume ' +
+          kampo.maxLength + ' signojn.';
+      }
+
+      if (
+        !eraro &&
+        kampo.id === 'registrighRipeto' &&
+        kampo.value !== elemento('registrighPasvorto').value
+      ) {
+        eraro = 'La du pasvortoj ne koheras.';
+      }
+
+      if (eraro) {
+        kampo.setAttribute('aria-invalid', 'true');
+
+        if (!unua) {
+          unua = kampo;
+          unuaMesagho = eraro;
+        }
+      } else {
+        kampo.removeAttribute('aria-invalid');
+      }
+    });
+
+    if (!unua) {
+      return true;
+    }
+
+    montriMesaghon(unuaMesagho, 'eraro');
+    aldoniPriskribon(unua, 'mesagho');
+    fokusi(unua);
+
+    return false;
+  }
+
+  document.addEventListener('input', evento => {
+    const kampo = evento.target;
+
+    if (!kampo.matches('input,textarea')) {
+      return;
+    }
+
+    kampo.removeAttribute('aria-invalid');
+
+    const priskriboj = (kampo.getAttribute('aria-describedby') || '')
+      .split(/\s+/)
+      .filter(id => id && id !== 'mesagho');
+
+    if (priskriboj.length) {
+      kampo.setAttribute('aria-describedby', priskriboj.join(' '));
+    } else {
+      kampo.removeAttribute('aria-describedby');
+    }
+  });
+
+  /*
+   * Dum peto la fokusita butono restas en la klavara ordo.
+   * aria-disabled sola ne blokas agojn; la kapta aŭskultanto
+   * sube efektive malhelpas ripetajn klakojn.
+   */
+  document.addEventListener('click', evento => {
+    const regilo = evento.target.closest(
+      'button, input[type="checkbox"]'
+    );
+
+    if (
+      regilo &&
+      regilo.closest('[data-okupata="jes"]')
+    ) {
+      evento.preventDefault();
+      evento.stopImmediatePropagation();
+    }
+  }, true);
+
+  document.addEventListener('submit', evento => {
+    if (evento.target.closest('[data-okupata="jes"]')) {
+      evento.preventDefault();
+      evento.stopImmediatePropagation();
+    }
+  }, true);
+
+  plenumiAgon = async function (ujo, laboro) {
+    if (ujo.dataset.okupata === 'jes') {
+      return;
+    }
+
+    if (
+      ujo.tagName === 'FORM' &&
+      !validigiFormularon(ujo)
+    ) {
+      return;
+    }
+
+    const antauaFokuso = document.activeElement;
+
+    const regiloj = [
+      ...ujo.querySelectorAll('button,input,textarea')
+    ];
+
+    const memoroj = regiloj.map(regilo => ({
+      regilo,
+      ariaDisabled: regilo.getAttribute('aria-disabled'),
+      readOnly: regilo.readOnly
+    }));
+
+    ujo.dataset.okupata = 'jes';
+    ujo.setAttribute('aria-busy', 'true');
+    stato.operacioj++;
+
+    regiloj.forEach(regilo => {
+      if (
+        regilo.tagName === 'BUTTON' ||
+        regilo.type === 'checkbox'
+      ) {
+        regilo.setAttribute('aria-disabled', 'true');
+      } else {
+        regilo.readOnly = true;
+      }
+    });
+
+    anonci('La peto estas prilaborata.');
+
+    try {
+      await laboro();
+    } catch (eraro) {
+      traktiEraron(eraro);
+    } finally {
+      memoroj.forEach(memoro => {
+        const regilo = memoro.regilo;
+
+        if (memoro.ariaDisabled === null) {
+          regilo.removeAttribute('aria-disabled');
+        } else {
+          regilo.setAttribute('aria-disabled', memoro.ariaDisabled);
+        }
+
+        if ('readOnly' in regilo) {
+          regilo.readOnly = memoro.readOnly;
+        }
+      });
+
+      delete ujo.dataset.okupata;
+      ujo.removeAttribute('aria-busy');
+      stato.operacioj--;
+
+      aplikiSkribon();
+
+      const aktiva = document.activeElement;
+
+      /*
+       * Ne superregu intencan fokusŝanĝon, ekzemple al erarmesaĝo.
+       */
+      if (
+        aktiva === document.body ||
+        !videbla(aktiva)
+      ) {
+        if (videbla(antauaFokuso)) {
+          fokusi(antauaFokuso);
+        } else if (!elemento('indeksaSekcio').hidden) {
+          fokusi(elemento('indeksaKonservaButono'));
+        } else {
+          fokusi(stato.uzanto ? kontaTitolo : eniraTitolo);
+        }
+      }
+    }
+  };
+
+  /*
+   * FLUO: TITOLOJ, KUNTEKSTO KAJ FOKUSO
+   */
+  function shanghiTitolanNivelon(malnova, speco) {
+    if (malnova.tagName.toLowerCase() === speco) {
+      return malnova;
+    }
+
+    const nova = document.createElement(speco);
+
+    [...malnova.attributes].forEach(atributo => {
+      nova.setAttribute(atributo.name, atributo.value);
+    });
+
+    while (malnova.firstChild) {
+      nova.appendChild(malnova.firstChild);
+    }
+
+    malnova.replaceWith(nova);
+    return nova;
+  }
+
+  function prepariForigilon(artikolo, prefikso, priskribo) {
+    const regilaro = artikolo.querySelector(':scope > .forigilaro');
+
+    if (!regilaro) {
+      return;
+    }
+
+    const malferma = regilaro.querySelector(':scope > button');
+    const konfirmujo = regilaro.querySelector('.forigaKonfirmujo');
+    const demando = konfirmujo.querySelector('p');
+    const butonoj = konfirmujo.querySelectorAll('button');
+
+    malferma.id = prefikso + '-forigi';
+    konfirmujo.id = prefikso + '-konfirmo';
+    demando.id = prefikso + '-demando';
+
+    malferma.setAttribute('aria-controls', konfirmujo.id);
+    aldoniPriskribon(malferma, priskribo);
+
+    konfirmujo.setAttribute('role', 'group');
+    konfirmujo.setAttribute('aria-labelledby', demando.id);
+
+    butonoj[0].id = prefikso + '-jes';
+    butonoj[1].id = prefikso + '-ne';
+
+    butonoj.forEach(butono => {
+      aldoniPriskribon(
+        butono,
+        demando.id + ' ' + priskribo
+      );
+    });
+  }
+
+  function prepariArtikolon(artikolo, prefikso, nivelo) {
+    artikolo.id = prefikso;
+    artikolo.tabIndex = -1;
+
+    const autoro = shanghiTitolanNivelon(
+      artikolo.querySelector(':scope > .autoro'),
+      nivelo
+    );
+
+    autoro.id = prefikso + '-autoro';
+    autoro.setAttribute('data-uzanta', '');
+    autoro.setAttribute('translate', 'no');
+
+    const dato = artikolo.querySelector(':scope > time');
+    dato.id = prefikso + '-dato';
+
+    artikolo.setAttribute('aria-labelledby', autoro.id);
+    artikolo.setAttribute('aria-describedby', dato.id);
+
+    prepariForigilon(
+      artikolo,
+      prefikso,
+      autoro.id + ' ' + dato.id
+    );
+
+    return { autoro, dato };
+  }
+
+  function prepariFluanAlireblecon() {
+    const kartoj = elemento('fluo')
+      .querySelectorAll(':scope > article');
+
+    kartoj.forEach((karto, indekso) => {
+      const afisho = stato.afishoj[indekso];
+
+      if (!afisho) {
+        return;
+      }
+
+      const prefikso = 'afisho-' + afisho.id;
+      const kunteksto = prepariArtikolon(karto, prefikso, 'h3');
+
+      const komentaro = karto.querySelector(':scope > .komentaro');
+
+      const komentaTitolo = shanghiTitolanNivelon(
+        komentaro.querySelector(':scope > h3, :scope > h4'),
+        'h4'
+      );
+
+      komentaTitolo.id = prefikso + '-komentoj';
+      komentaro.removeAttribute('aria-label');
+      komentaro.setAttribute('aria-labelledby', komentaTitolo.id);
+
+      komentaro.querySelectorAll(':scope > article')
+        .forEach((ero, komentaIndekso) => {
+          const komento = afisho.komentoj[komentaIndekso];
+
+          prepariArtikolon(
+            ero,
+            'komento-artikolo-' + komento.id,
+            'h5'
+          );
+        });
+
+      const formularo = komentaro.querySelector('.komentformularo');
+
+      if (formularo) {
+        const tekstejo = formularo.querySelector('textarea');
+        const sendilo = formularo.querySelector('button');
+
+        tekstejo.required = true;
+        sendilo.id = prefikso + '-komenti';
+
+        formularo.setAttribute('aria-label', 'Aldoni komenton');
+
+        aldoniPriskribon(
+          tekstejo,
+          kunteksto.autoro.id + ' ' + kunteksto.dato.id
+        );
+
+        aldoniPriskribon(
+          sendilo,
+          kunteksto.autoro.id + ' ' + kunteksto.dato.id
+        );
+
+        aldoniDeviganNoton(formularo);
+      }
+    });
+  }
+
+  const antauaFlumontrado = montriFluon;
+  let lastaFluaUzanto = '';
+
+  montriFluon = function () {
+    const fluo = elemento('fluo');
+    const aktiva = document.activeElement;
+    const estisEnFluo = fluo.contains(aktiva);
+    const aktivaId = estisEnFluo ? aktiva.id : '';
+
+    const gepatraAfisho = estisEnFluo
+      ? aktiva.closest('#fluo > article')
+      : null;
+
+    const gepatraId = gepatraAfisho ? gepatraAfisho.id : '';
+
+    const nunaUzanto = stato.uzanto ? String(stato.uzanto.id) : '';
+
+    /*
+     * Konservu ankoraŭ nesenditajn komentojn dum refarado
+     * de la sama sesia interfaco.
+     */
+    const malnetoj = new Map();
+
+    if (nunaUzanto && nunaUzanto === lastaFluaUzanto) {
+      fluo.querySelectorAll('.komentformularo textarea')
+        .forEach(kampo => {
+          malnetoj.set(kampo.id, kampo.value);
+        });
+    }
+
+    antauaFlumontrado();
+    prepariFluanAlireblecon();
+
+    malnetoj.forEach((valoro, id) => {
+      const kampo = elemento(id);
+
+      if (kampo && fluo.contains(kampo)) {
+        kampo.value = valoro;
+      }
+    });
+
+    lastaFluaUzanto = nunaUzanto;
+    aplikiSkribon();
+
+    if (estisEnFluo) {
+      const sama = aktivaId ? elemento(aktivaId) : null;
+      const gepatra = gepatraId ? elemento(gepatraId) : null;
+
+      if (videbla(sama)) {
+        fokusi(sama);
+      } else if (videbla(gepatra)) {
+        fokusi(gepatra);
+      } else {
+        fokusi(fluaTitolo);
+      }
+    }
+  };
+
+  const antauaRefreshigo = refreshigiFluon;
+
+  refreshigiFluon = async function () {
+    if (stato.shargante) {
+      return;
+    }
+
+    const butono = elemento('refreshaButono');
+    const estisFokusita = document.activeElement === butono;
+    const fluo = elemento('fluo');
+
+    fluo.setAttribute('aria-busy', 'true');
+
+    try {
+      await antauaRefreshigo();
+    } finally {
+      fluo.removeAttribute('aria-busy');
+      aplikiSkribon();
+
+      if (
+        estisFokusita &&
+        document.activeElement === document.body
+      ) {
+        fokusi(butono);
+      }
+    }
+  };
+
+  /*
+   * EKSTERAJ LIGILOJ
+   *
+   * La averto estas komuna priskribo, ne ŝanĝo de la uzanta teksto.
+   */
+  const ligilaHelpo = kreiElementon(
+    'span',
+    'nurLegilo',
+    'Ekstera ligilo; malfermiĝas en nova langeto aŭ fenestro.'
+  );
+
+  ligilaHelpo.id = 'eksteraLigilaHelpo';
+  document.body.appendChild(ligilaHelpo);
+
+  function prepariNovajnElementojn() {
+    document.querySelectorAll('a[target="_blank"]').forEach(ligilo => {
+      aldoniPriskribon(ligilo, 'eksteraLigilaHelpo');
+
+      const rilatoj = new Set(
+        (ligilo.getAttribute('rel') || '')
+          .split(/\s+/)
+          .filter(Boolean)
+      );
+
+      rilatoj.add('noopener');
+      rilatoj.add('noreferrer');
+
+      const nova = [...rilatoj].join(' ');
+
+      if (ligilo.getAttribute('rel') !== nova) {
+        ligilo.setAttribute('rel', nova);
+      }
+    });
+
+    /*
+     * La indeksa lista titolo estas h3;
+     * unuopaj enskriboj do ricevas h4.
+     */
+    document.querySelectorAll('.indeksaEnskribo > h3')
+      .forEach(titolo => {
+        const nova = shanghiTitolanNivelon(titolo, 'h4');
+        nova.setAttribute('data-uzanta', '');
+        nova.setAttribute('translate', 'no');
+      });
+
+    document.querySelectorAll('.enhavo,.autoro').forEach(ero => {
+      ero.setAttribute('translate', 'no');
+    });
+  }
+
+  /*
+   * SKRIBA BUTONO
+   *
+   * La nomo indikas la sekvan agon.
+   * Pro la ŝanĝiĝanta nomo ni ne uzas aria-pressed.
+   */
+  const skribaButono = kreiElementon(
+    'button',
+    'duaranga',
+    'Supersigna skribo'
+  );
+
+  skribaButono.id = 'skribaButono';
+  skribaButono.type = 'button';
+
+  const skribaHelpo = kreiElementon('span', 'nurLegilo');
+  skribaHelpo.id = 'skribaHelpo';
+
+  skribaButono.setAttribute('aria-describedby', skribaHelpo.id);
+
+  elemento('uzkondichaButono').parentElement
+    .append(skribaButono, skribaHelpo);
+
+  function ghisdatigiSkribanButonon() {
+    skribaButono.textContent = supersigna
+      ? "h-skribo"
+      : 'Supersigna skribo';
+
+    skribaHelpo.textContent = supersigna
+      ? 'Nun aktivas supersigna skribo. Ŝanĝi nur la interfacon al h-skribo.'
+      : 'Nun aktivas h-skribo. Ŝanĝi nur la interfacon al supersigna skribo.';
+  }
+
+  skribaButono.addEventListener('click', () => {
+    supersigna = !supersigna;
+    ghisdatigiSkribanButonon();
+    aplikiSkribon();
+
+    anonci(
+      supersigna
+        ? 'Supersigna skribo estas aktiva.'
+        : 'h-skribo estas aktiva.'
+    );
+  });
+
+  /*
+   * Aŭtomate prilaboru novajn interfacajn tekstojn,
+   * ankaŭ servilajn respondojn kaj la uzantoindekson.
+   *
+   * Neniu innerHTML-anstataŭigo:
+   * eventaj aŭskultantoj, formularaj valoroj kaj fokuso restas.
+   */
+  let prilaboroPlanita = false;
+
+  const observilo = new MutationObserver(() => {
+    if (prilaboroPlanita) {
+      return;
+    }
+
+    prilaboroPlanita = true;
+
+    queueMicrotask(() => {
+      prilaboroPlanita = false;
+      prepariNovajnElementojn();
+      aplikiSkribon();
+    });
+  });
+
+  observilo.observe(document.documentElement, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: tekstajAtributoj
+  });
+
+  elemento('fluaStato').setAttribute('aria-atomic', 'true');
+  elemento('indeksaStato').setAttribute('aria-atomic', 'true');
+
+  ghisdatigiSkribanButonon();
+  prepariNovajnElementojn();
+  aplikiSkribon();
+
+  /*
+   * Komencu la apon nur post instalado de ĉiuj helpiloj.
+   */
+  komenci().catch(traktiEraron);
+})();
+</script>
