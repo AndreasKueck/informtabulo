@@ -25,7 +25,14 @@
             "Bonvenon al la diskutoj!",
         "Welcome to Discussions!":
             "Bonvenon al la diskutoj!",
-
+        "started this conversation in":
+            "komencis tiun ĉi konversacion en",
+        "Add your comment here...":
+            "Aldonu vian komenton ĉi tie...",
+        "You’re receiving notifications because you authored the thread.":
+            "Vi ricevas sciigojn, ĉar vi verkis la temfadenon.",
+        "You’re not receiving notifications from this thread.":
+            "Vi ne ricevas sciigojn de tiu ĉi temfadeno.",
         "Discussions are to share announcements, create conversation in your community, answer questions, and more.":
             "Diskutoj servas por publikigi anoncojn, komenci konversaciojn en via komunumo, respondi demandojn kaj pli.",
 
@@ -1006,6 +1013,12 @@
                             Vi povas komenci novan diskuton por
                             fari demandojn pri ĉi tiu deponejo
                             aŭ ricevi helpon.
+                        </dd>
+                        <dt lang="en">
+                            minutes ago
+                        </dt>
+                        <dd>
+                            minutojn antaŭe
                         </dd>
                                                 <!-- Klarigo pri la celo de la diskutoj -->
                         <dt lang="en">
