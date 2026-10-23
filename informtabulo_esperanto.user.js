@@ -1007,6 +1007,19 @@
                             fari demandojn pri ĉi tiu deponejo
                             aŭ ricevi helpon.
                         </dd>
+                                                <!-- Klarigo pri la celo de la diskutoj -->
+                        <dt lang="en">
+                            Discussions are to share announcements,
+                            create conversation in your community,
+                            answer questions, and more. To get started,
+                            you can create a new discussion.
+                        </dt>
+                        <dd>
+                            Diskutoj servas por publikigi anoncojn,
+                            komenci konversaciojn en via komunumo,
+                            respondi demandojn kaj pli. Por komenci,
+                            vi povas krei novan diskuton.
+                        </dd>
                     </dl>
                 </div>
             </details>
