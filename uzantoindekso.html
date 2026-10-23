@@ -1129,20 +1129,45 @@
   aldoniPriskribon(elemento('registrighPasvorto'), 'pasvortaHelpo');
   aldoniPriskribon(elemento('registrighRipeto'), 'pasvortaHelpo');
 
-  function aldoniDeviganNoton(formularo) {
-    if (formularo.querySelector('[data-deviga-noto]')) {
-      return;
-    }
-
-    const noto = kreiElementon(
-      'p',
-      'milda formularaHelpo',
-      'Ĉiuj kampoj en ĉi tiu formularo estas devigaj.'
-    );
-
-    noto.setAttribute('data-deviga-noto', '');
-    formularo.prepend(noto);
+function aldoniDeviganNoton(formularo) {
+  if (formularo.querySelector('[data-deviga-noto]')) {
+    return;
   }
+
+  const noto = kreiElementon(
+    'p',
+    'milda formularaHelpo',
+    'Ĉiuj kampoj en ĉi tiu formularo estas devigaj.'
+  );
+
+  noto.setAttribute('data-deviga-noto', '');
+
+  const alternativo = kreiElementon(
+    'p',
+    'milda formularaHelpo'
+  );
+
+  const ligilo = kreiElementon(
+    'a',
+    'tekstaLigilo',
+    'tiun GitHub-deponejan diskut-paĝaron'
+  );
+
+  ligilo.href =
+    'https://github.com/AndreasKueck/informtabulo/discussions';
+  ligilo.target = '_blank';
+  ligilo.rel = 'noopener noreferrer';
+
+  alternativo.append(
+    document.createTextNode(
+      'Ĉu vi ne volas registriĝi ĉi tie? Tiaokaze bonvole uzu '
+    ),
+    ligilo,
+    document.createTextNode('.')
+  );
+
+  formularo.prepend(noto, alternativo);
+}
 
   [
     'ensalutFormularo',
