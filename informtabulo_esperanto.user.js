@@ -20,6 +20,28 @@
         /^\/AndreasKueck\/informtabulo\/discussions(?:\/|$)/i;
 
     const DICTIONARY = new Map(Object.entries({
+        // Bonvenigo kaj enkonduko al la diskutoj
+        "Welcome to discussions!":
+            "Bonvenon al la diskutoj!",
+        "Welcome to Discussions!":
+            "Bonvenon al la diskutoj!",
+
+        "Discussions are to share announcements, create conversation in your community, answer questions, and more.":
+            "Diskutoj servas por publikigi anoncojn, komenci konversaciojn en via komunumo, respondi demandojn kaj pli.",
+
+        "To get started, you can create a new discussion.":
+            "Por komenci, vi povas krei novan diskuton.",
+
+        "Discussions are to share announcements, create conversation in your community, answer questions, and more. To get started, you can create a new discussion.":
+            "Diskutoj servas por publikigi anoncojn, komenci konversaciojn en via komunumo, respondi demandojn kaj pli. Por komenci, vi povas krei novan diskuton.",
+
+        // Apartaj teksteroj, se la ligilo dividas la alineon
+        "Discussions are to share announcements, create conversation in your community, answer questions, and more. To get started, you can":
+            "Diskutoj servas por publikigi anoncojn, komenci konversaciojn en via komunumo, respondi demandojn kaj pli. Por komenci, vi povas",
+        "To get started, you can":
+            "Por komenci, vi povas",
+        "create a new discussion":
+            "krei novan diskuton",
         // Filtrado kaj komunumaj statistikoj
         "Filter:": "Filtrilo:",
         "Community Insights": "Komunumaj statistikoj",
