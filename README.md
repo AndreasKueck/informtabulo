@@ -2,11 +2,13 @@
 
 Tio chi estas la Guglo-Apoj-Skripto-pakajho por la supre menciitaj apoj.
 
-Temas pri simpla [informtabulo pri radio, televido kaj pli](https://script.google.com/a/~/macros/s/AKfycbxtEV2wARkUP-eM7a4s4pKAEDzLpL5kH6RcejkGD6Y_Mo6pttkMJWeY89KUbJyQzDe-Vw/exec). Uzantoj povas kontribui per afishoj kaj komentoj.
+La [informtabulo pri radio, televido kaj pli](https://script.google.com/a/~/macros/s/AKfycbxtEV2wARkUP-eM7a4s4pKAEDzLpL5kH6RcejkGD6Y_Mo6pttkMJWeY89KUbJyQzDe-Vw/exec) nun nur montras informojn kaj ligilojn. Oni ne plu povas registrighi, ensaluti, afishi au komenti en la ret-apo. Chiuj iamaj uzantokontoj, afishoj kaj komentoj estis forigitaj el ghi.
+
+La diskuto pri radio, televido kaj pli nun okazas en la chi-deponeja [GitHub-a diskutpagharo](https://github.com/AndreasKueck/informtabulo/discussions). Tie vi povas legi la diskutojn kaj per via GitHub-uzantokonto komenci novajn diskutojn au aldoni komentojn.
 
 ## Tampermonkey-skripto por Esperanta interfaco de diskutoj ("Discussions")
 
-La deponejo ankau disponigas Tampermonkey-skripton, kiu tradukas multajn anglajn interfacajn tekstojn de la [diskutpagharо](https://github.com/AndreasKueck/informtabulo/discussions) kaj ghiaj subpaghoj en Esperanton.
+La deponejo ankau disponigas Tampermonkey-skripton, kiu tradukas multajn anglajn interfacajn tekstojn de la [GitHub-a diskutpagharо](https://github.com/AndreasKueck/informtabulo/discussions) kaj ghiaj subpaghoj en Esperanton.
 
 ### Funkcioj
 
